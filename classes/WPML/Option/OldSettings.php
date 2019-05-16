@@ -7,8 +7,8 @@
  * @package  WPML
  * @category WordPress Plugins
  * @version  2.1.7
- * @author   WebFactory Ltd
- * @link     https://www.webfactoryltd.com/
+ * @author   Ironikus
+ * @link     https://ironikus.com/
  * @link     https://wordpress.org/plugins/wp-mailto-links/
  * @license  Dual licensed under the MIT and GPLv2+ licenses
  */

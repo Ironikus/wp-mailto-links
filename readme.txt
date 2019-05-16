@@ -1,5 +1,5 @@
 === WP Mailto Links - Manage & Protect Email Links ===
-Contributors: WebFactory, UnderConstructionPage, googlemapswidget, securityninja, wpreset
+Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.2
 Tested up to: 5.2
@@ -118,9 +118,12 @@ Now all mailto links will be wrapped around a `<b>`-tag.
 
 == Changelog ==
 
+= 2.2.1 =
+* Fix: Show admin keylock icon relatively and not absolute
+* Ironikus took over development
+
 = 2.2 =
 * 2019-03-26
-* WebFactory took over development
 * bug fixes
 * 10,000 installations; 88,200 downloads
 

@@ -9,8 +9,8 @@
  * @package  WPRun
  * @category WordPress Plugin
  * @version  0.5.0
- * @author   WebFactory Ltd
- * @link     https://www.webfactoryltd.com/
+ * @author   Ironikus
+ * @link     https://ironikus.com/
  * @license  Dual licensed under the MIT and GPLv2+ licenses
  */
 abstract class WPRun_BaseAbstract_0x5x0

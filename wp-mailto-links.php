@@ -4,8 +4,8 @@
  * Version:        2.20
  * Plugin URI:     https://wordpress.org/plugins/wp-mailto-links/
  * Description:    Manage mailto links on your site and protect email addresses from spambots, set mail icon and more.
- * Author:         WebFactory Ltd
- * Author URI:     https://www.webfactoryltd.com/
+ * Author:         Ironikus
+ * Author URI:     https://ironikus.com/
  * License:        Dual licensed under the MIT and GPLv2+ licenses
  * Text Domain:    wp-mailto-links
  */

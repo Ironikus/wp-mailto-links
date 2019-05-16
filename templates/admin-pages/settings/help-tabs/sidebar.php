@@ -29,36 +29,18 @@
 
 <?php if (empty($showOtherPlugins)): ?>
 <hr>
-<h4><?php _e('Other plugins by WebFactory', 'wp-mailto-links') ?></h4>
+<h4><?php _e('Other plugins by Ironikus', 'wp-mailto-links') ?></h4>
 <ul>
     <li>
-        <a href="https://wordpress.org/plugins/eps-301-redirects/" target="_blank">
+        <a href="https://wordpress.org/plugins/wp-webhooks/" target="_blank">
             <i class="dashicons-before dashicons-star-filled"></i>
-            <?php _e('301 Redirects', 'wp-mailto-links') ?>
+            <?php _e('WP Webhooks', 'wp-mailto-links') ?>
         </a>
     </li>
     <li>
-        <a href="https://wordpress.org/plugins/google-maps-widget/" target="_blank">
+        <a href="https://wordpress.org/plugins/wp-snow/" target="_blank">
             <i class="dashicons-before dashicons-star-filled"></i>
-            <?php _e('Google Maps Widget', 'wp-mailto-links') ?>
-        </a>
-    </li>
-    <li>
-        <a href="https://wordpress.org/plugins/security-ninja/" target="_blank">
-            <i class="dashicons-before dashicons-star-filled"></i>
-            <?php _e('Security Ninja', 'wp-mailto-links') ?>
-        </a>
-    </li>
-    <li>
-        <a href="https://wordpress.org/plugins/under-construction-page/" target="_blank">
-            <i class="dashicons-before dashicons-star-filled"></i>
-            <?php _e('UnderConstructionPage', 'wp-mailto-links') ?>
-        </a>
-    </li>
-    <li>
-        <a href="https://wordpress.org/plugins/wp-htaccess-editor/" target="_blank">
-            <i class="dashicons-before dashicons-star-filled"></i>
-            <?php _e('WP Htaccess Editor', 'wp-mailto-links') ?>
+            <?php _e('WP Snow', 'wp-mailto-links') ?>
         </a>
     </li>
 
