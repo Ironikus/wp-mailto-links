@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:    WP Mailto Links - Manage & Protect Email Links
- * Version:        2.20
+ * Version:        2.2.1
  * Plugin URI:     https://wordpress.org/plugins/wp-mailto-links/
  * Description:    Manage mailto links on your site and protect email addresses from spambots, set mail icon and more.
  * Author:         Ironikus

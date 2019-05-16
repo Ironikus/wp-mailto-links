@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.2
 Tested up to: 5.2
-Stable tag: 2.20
+Stable tag: 2.2.1
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
