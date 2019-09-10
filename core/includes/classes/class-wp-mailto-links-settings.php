@@ -74,6 +74,11 @@ class WP_Mailto_Links_Settings{
 	 * ######################
 	 */
 
+	 /**
+	  * Load the settings for our admin settings page
+	  *
+	  * @return array - An array with all available settings and filled values
+	  */
 	private function load_settings(){
 		$fields = array(
 
@@ -82,19 +87,19 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'protect',
 				'type'        => 'multi-input',
 				'input-type'  => 'radio',
-				'title'       => wpmt()->helpers->translate( 'Protect emails', 'wpmt-settings-protect' ),
+				'title'       => WPMT()->helpers->translate( 'Protect emails', 'wpmt-settings-protect' ),
 				'inputs' 	  => array( 
 					1 => array(
-						'label' => wpmt()->helpers->translate( 'Full-page scan', 'wpmt-settings-protect-label' ),
-						'description' => wpmt()->helpers->translate('This will check the whole page against any mails and secures them.', 'wpmt-settings-protect-tip')
+						'label' => WPMT()->helpers->translate( 'Full-page scan', 'wpmt-settings-protect-label' ),
+						'description' => WPMT()->helpers->translate('This will check the whole page against any mails and secures them.', 'wpmt-settings-protect-tip')
 					),
 					2 => array(
-						'label' => wpmt()->helpers->translate( 'Wordpress filters', 'wpmt-settings-protect-label' ),
-						'description' => wpmt()->helpers->translate('Secure only mails that occur within WordPress filters.', 'wpmt-settings-protect-tip')
+						'label' => WPMT()->helpers->translate( 'Wordpress filters', 'wpmt-settings-protect-label' ),
+						'description' => WPMT()->helpers->translate('Secure only mails that occur within WordPress filters.', 'wpmt-settings-protect-tip')
 					),
 					3 => array(
-						'label' => wpmt()->helpers->translate( 'Don\'t do anything.', 'wpmt-settings-protect-label' ),
-						'description' => wpmt()->helpers->translate('This turns off the protection for emails. (Not recommended)', 'wpmt-settings-protect-tip')
+						'label' => WPMT()->helpers->translate( 'Don\'t do anything.', 'wpmt-settings-protect-label' ),
+						'description' => WPMT()->helpers->translate('This turns off the protection for emails. (Not recommended)', 'wpmt-settings-protect-tip')
 					),
 				 ),
 				'required'    => false
@@ -105,21 +110,21 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'protect_using',
 				'type'        => 'multi-input',
 				'input-type'  => 'radio',
-				'title'       => wpmt()->helpers->translate( 'Protect emails using', 'wpmt-settings-protect_using' ),
+				'title'       => WPMT()->helpers->translate( 'Protect emails using', 'wpmt-settings-protect_using' ),
 				'inputs' 	  => array( 
 					'with_javascript' => array(
-						'label' => wpmt()->helpers->translate( 'automatically the best method (including javascript)', 'wpmt-settings-protect_using-label' )
+						'label' => WPMT()->helpers->translate( 'automatically the best method (including javascript)', 'wpmt-settings-protect_using-label' )
 					),
 					'without_javascript' => array(
-						'label' => wpmt()->helpers->translate( 'automatically the best method (excluding javascript)', 'wpmt-settings-protect_using-label' ),
+						'label' => WPMT()->helpers->translate( 'automatically the best method (excluding javascript)', 'wpmt-settings-protect_using-label' ),
 					),
 					'strong_method' => array(
-						'label' => wpmt()->helpers->translate( 'a strong method that replaces all emails with a "*protection text*".', 'wpmt-settings-protect_using-label' ),
-						'description' => wpmt()->helpers->translate('You can configure the protection text within the advanced settings.', 'wpmt-settings-protect_using-tip')
+						'label' => WPMT()->helpers->translate( 'a strong method that replaces all emails with a "*protection text*".', 'wpmt-settings-protect_using-label' ),
+						'description' => WPMT()->helpers->translate('You can configure the protection text within the advanced settings.', 'wpmt-settings-protect_using-tip')
 					),
 					'char_encode' => array(
-						'label' => wpmt()->helpers->translate( 'simple HTML character encoding.', 'wpmt-settings-protect_using-label' ),
-						'description' => wpmt()->helpers->translate('Offers goot (but not the best) protection, which saves you in most scenarios.', 'wpmt-settings-protect_using-tip')
+						'label' => WPMT()->helpers->translate( 'simple HTML character encoding.', 'wpmt-settings-protect_using-label' ),
+						'description' => WPMT()->helpers->translate('Offers goot (but not the best) protection, which saves you in most scenarios.', 'wpmt-settings-protect_using-tip')
 					),
 				 ),
 				'required'    => false
@@ -131,33 +136,33 @@ class WP_Mailto_Links_Settings{
 				'type'        => 'multi-input',
 				'input-type'  => 'checkbox',
 				'advanced' 	  => true,
-				'title'       => wpmt()->helpers->translate( 'Protect...', 'wpmt-settings-filter_body' ),
-				'label'       => wpmt()->helpers->translate( 'Customize what this plugin protects.', 'wpmt-settings-filter_body-label' ),
+				'title'       => WPMT()->helpers->translate( 'Protect...', 'wpmt-settings-filter_body' ),
+				'label'       => WPMT()->helpers->translate( 'Customize what this plugin protects.', 'wpmt-settings-filter_body-label' ),
 				'inputs' 	  => array(
 					'filter_rss' => array(
 						'advanced' 	  => true,
-						'label' => wpmt()->helpers->translate( 'RSS feed', 'wpmt-settings-filter_rss-label' ),
-						'description' => wpmt()->helpers->translate( 'Activating this option results in protecting the rss feed based on the given protection method.', 'wpmt-settings-filter_rss-tip' )
+						'label' => WPMT()->helpers->translate( 'RSS feed', 'wpmt-settings-filter_rss-label' ),
+						'description' => WPMT()->helpers->translate( 'Activating this option results in protecting the rss feed based on the given protection method.', 'wpmt-settings-filter_rss-tip' )
 					),
 					'input_strong_protection' => array(
 						'advanced' 	  => true,
-						'label' => wpmt()->helpers->translate( 'input form email fields using strong protection.', 'wpmt-settings-input_strong_protection-label' ),
-						'description' => wpmt()->helpers->translate( 'Warning: this option could conflict with certain form plugins. Test it first. (Requires javascript)', 'wpmt-settings-input_strong_protection-tip' )
+						'label' => WPMT()->helpers->translate( 'input form email fields using strong protection.', 'wpmt-settings-input_strong_protection-label' ),
+						'description' => WPMT()->helpers->translate( 'Warning: this option could conflict with certain form plugins. Test it first. (Requires javascript)', 'wpmt-settings-input_strong_protection-tip' )
 					),
 					'convert_plain_to_mailto' => array(
 						'advanced' 	  => true,
-						'label' => wpmt()->helpers->translate( 'plain emails by converting them to mailto links', 'wpmt-settings-convert_plain_to_mailto-label' ),
-						'description' => wpmt()->helpers->translate( 'Plain emails will be automatically converted to mailto links where possible. (Requires javascript)', 'wpmt-settings-convert_plain_to_mailto-tip' )
+						'label' => WPMT()->helpers->translate( 'plain emails by converting them to mailto links', 'wpmt-settings-convert_plain_to_mailto-label' ),
+						'description' => WPMT()->helpers->translate( 'Plain emails will be automatically converted to mailto links where possible. (Requires javascript)', 'wpmt-settings-convert_plain_to_mailto-tip' )
 					),
 					'protect_shortcode_tags' => array(
 						'advanced' 	  => true,
-						'label' => wpmt()->helpers->translate( 'shortcode content', 'wpmt-settings-protect_shortcode_tags-label' ),
-						'description' => wpmt()->helpers->translate( 'Protect every shortcode content separately. (This may slows down your site)', 'wpmt-settings-protect_shortcode_tags-tip' )
+						'label' => WPMT()->helpers->translate( 'shortcode content', 'wpmt-settings-protect_shortcode_tags-label' ),
+						'description' => WPMT()->helpers->translate( 'Protect every shortcode content separately. (This may slows down your site)', 'wpmt-settings-protect_shortcode_tags-tip' )
 					),
 					'filter_hook' => array(
 						'advanced' 	  => true,
-						'label' => wpmt()->helpers->translate( 'emails from "init" hook', 'wpmt-settings-filter_hook-label' ),
-						'description' => wpmt()->helpers->translate( 'Check this option if you want to register the email filters on the "init" hook instead of the "wp" hook.', 'wpmt-settings-filter_hook-tip' )
+						'label' => WPMT()->helpers->translate( 'emails from "init" hook', 'wpmt-settings-filter_hook-label' ),
+						'description' => WPMT()->helpers->translate( 'Check this option if you want to register the email filters on the "init" hook instead of the "wp" hook.', 'wpmt-settings-filter_hook-tip' )
 					),
 				 ),
 				'required'    => false,
@@ -168,10 +173,10 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'exclude_posts',
 				'type'        => 'text',
 				'advanced' 	  => true,
-				'title'       => wpmt()->helpers->translate('Exclude post id\'s from protection', 'wpmt-settings-exclude_posts'),
+				'title'       => WPMT()->helpers->translate('Exclude post id\'s from protection', 'wpmt-settings-exclude_posts'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('By comma separating post id\'s ( e.g. 123,4535,643), you are able to exclude these posts from the logic protection.', 'wpmt-settings-exclude_posts-tip')
+				'description' => WPMT()->helpers->translate('By comma separating post id\'s ( e.g. 123,4535,643), you are able to exclude these posts from the logic protection.', 'wpmt-settings-exclude_posts-tip')
 			),
 
 			'protection_text' => array(
@@ -179,10 +184,10 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'protection_text',
 				'type'        => 'text',
 				'advanced' 	  => true,
-				'title'       => wpmt()->helpers->translate('Set protection text *', 'wpmt-settings-class_name'),
+				'title'       => WPMT()->helpers->translate('Set protection text *', 'wpmt-settings-class_name'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('This text will be shown for protected emailaddresses.', 'wpmt-settings-class_name-tip')
+				'description' => WPMT()->helpers->translate('This text will be shown for protected emailaddresses.', 'wpmt-settings-class_name-tip')
 			),
 
 			'class_name' => array(
@@ -190,22 +195,22 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'class_name',
 				'type'        => 'text',
 				'advanced' 	  => true,
-				'title'       => wpmt()->helpers->translate('Additional classes', 'wpmt-settings-class_name'),
-				'label'       => wpmt()->helpers->translate('Add extra classes to mailto links.', 'wpmt-settings-class_name-label'),
+				'title'       => WPMT()->helpers->translate('Additional classes', 'wpmt-settings-class_name'),
+				'label'       => WPMT()->helpers->translate('Add extra classes to mailto links.', 'wpmt-settings-class_name-label'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('Leave blank for none', 'wpmt-settings-class_name-tip')
+				'description' => WPMT()->helpers->translate('Leave blank for none', 'wpmt-settings-class_name-tip')
 			),
 
 			'security_check' => array(
 				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
 				'id'          => 'security_check',
 				'type'        => 'checkbox',
-				'title'       => wpmt()->helpers->translate('Security Check', 'wpmt-settings-security_check'),
-				'label'       => wpmt()->helpers->translate('Mark emails on the site as successfully encoded', 'wpmt-settings-security_check-label') . '<i class="dashicons-before dashicons-lock" style="color:green;"></i>',
+				'title'       => WPMT()->helpers->translate('Security Check', 'wpmt-settings-security_check'),
+				'label'       => WPMT()->helpers->translate('Mark emails on the site as successfully encoded', 'wpmt-settings-security_check-label') . '<i class="dashicons-before dashicons-lock" style="color:green;"></i>',
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('Only visible for admin users. If your emails look broken, simply deactivate this feature.', 'wpmt-settings-security_check-tip')
+				'description' => WPMT()->helpers->translate('Only visible for admin users. If your emails look broken, simply deactivate this feature.', 'wpmt-settings-security_check-tip')
 			),
 
 			'own_admin_menu' => array(
@@ -213,22 +218,22 @@ class WP_Mailto_Links_Settings{
 				'id'          => 'own_admin_menu',
 				'type'        => 'checkbox',
 				'advanced' 	  => true,
-				'title'       => wpmt()->helpers->translate('Admin Menu', 'wpmt-settings-own_admin_menu'),
-				'label'       => wpmt()->helpers->translate('Show this page in the main menu item', 'wpmt-settings-own_admin_menu-label'),
+				'title'       => WPMT()->helpers->translate('Admin Menu', 'wpmt-settings-own_admin_menu'),
+				'label'       => WPMT()->helpers->translate('Show this page in the main menu item', 'wpmt-settings-own_admin_menu-label'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('Otherwise it will be shown in "Settings"-menu.', 'wpmt-settings-security_check-tip')
+				'description' => WPMT()->helpers->translate('Otherwise it will be shown in "Settings"-menu.', 'wpmt-settings-security_check-tip')
 			),
 
 			'advanced_settings' => array(
 				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
 				'id'          => 'advanced_settings',
 				'type'        => 'checkbox',
-				'title'       => wpmt()->helpers->translate('Advanced Settings', 'wpmt-settings-advanced_settings'),
-				'label'       => wpmt()->helpers->translate('Show advanced settings for more configuration possibilities.', 'wpmt-settings-advanced_settings-label'),
+				'title'       => WPMT()->helpers->translate('Advanced Settings', 'wpmt-settings-advanced_settings'),
+				'label'       => WPMT()->helpers->translate('Show advanced settings for more configuration possibilities.', 'wpmt-settings-advanced_settings-label'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => wpmt()->helpers->translate('Activate the advanced settings in case you want to customize the default logic or you want to troubleshoot the plugin.', 'wpmt-settings-advanced_settings-tip')
+				'description' => WPMT()->helpers->translate('Activate the advanced settings in case you want to customize the default logic or you want to troubleshoot the plugin.', 'wpmt-settings-advanced_settings-tip')
 			),
 
 		);

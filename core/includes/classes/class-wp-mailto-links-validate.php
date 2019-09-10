@@ -137,7 +137,7 @@ class WP_Mailto_Links_Validate{
         $security_check = (bool) WPMT()->settings->get_setting( 'security_check', true );
 
         if ( $replaceBy === null ) {
-            $replaceBy = WPWHPRO()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
+            $replaceBy = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
         }
 
         return preg_replace_callback( WPMT()->settings->get_email_regex(), function ( $matches ) use ( $replaceBy, $protection_method, $security_check ) {

@@ -96,7 +96,7 @@ $advanced_settings = (bool) WPMT()->settings->get_setting( 'advanced_settings', 
             </fieldset>
 
             <p>
-                <?php submit_button( WPWHPRO()->helpers->translate( 'Save all', 'admin-settings' ) ); ?>
+                <?php submit_button( WPMT()->helpers->translate( 'Save all', 'admin-settings' ) ); ?>
             </p>
         </div>
     </div>

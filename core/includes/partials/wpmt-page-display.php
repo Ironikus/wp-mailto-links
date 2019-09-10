@@ -10,11 +10,11 @@ $mulsitie_slug = ( is_multisite() ) ? 'network/' : '';
 //Update settings
 if( isset( $_POST[ $this->page_name . '_nonce' ] ) ){
     if( ! wp_verify_nonce( $_POST[ $this->page_name . '_nonce' ], $this->page_name ) ){
-        wp_die( WPWHPRO()->helpers->translate( 'You don\'t have permission to update these settings.', 'admin-settings' ) );
+        wp_die( WPMT()->helpers->translate( 'You don\'t have permission to update these settings.', 'admin-settings' ) );
     }
 
     if( ! current_user_can( WPMT()->settings->get_admin_cap( 'admin-update-settings' ) ) ){
-        wp_die( WPWHPRO()->helpers->translate( 'You don\'t have permission to update these settings.', 'admin-settings' ) );
+        wp_die( WPMT()->helpers->translate( 'You don\'t have permission to update these settings.', 'admin-settings' ) );
     }
 
     if( isset( $_POST[ $this->settings_key ] ) && is_array( $_POST[ $this->settings_key ] ) ){
