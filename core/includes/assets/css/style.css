@@ -1,0 +1,16 @@
+span.wpml-nodis { 
+    display:none !important; 
+}
+
+span.wpml-rtl { 
+    unicode-bidi:bidi-override !important; 
+    direction:rtl !important; 
+    display:inline !important; 
+}
+
+.wpml-encoded { 
+    position:relative; 
+    margin-top:-0.3em; 
+    z-index:1000; 
+    color:green; 
+}

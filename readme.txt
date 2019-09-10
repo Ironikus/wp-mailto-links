@@ -2,28 +2,28 @@
 Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.2
-Tested up to: 5.2
-Stable tag: 2.2.1
+Tested up to: 5.2.3
+Stable tag: 3.0.0
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Protect & encode email addresses and mailto links from spambots & spamming. Easy to use - encodes emails without setup.
+Protect & encode email addresses and mailto links from spambots & spamming. Easy to use - encodes emails out-of-the-box.
 
 == Description ==
-Protect and encode email addresses and mailto links from spambots and spamming. Easy to use out-of-the-box without any configuration.
-
-http://www.youtube.com/watch?v=NxHnJWQnyuY
+Protect and encode email addresses and mailto links from spambots, spamming and other robots. Easy to use out-of-the-box without any configuration.
 
 = Features =
-* Protect mailto links automatically
-* Protect plain email addresses or convert them to mailto links
-* Protect RSS feed
-* Set icon for all mailto links, also supports Font Awesome Icons and Dashicons
+* Full page protection for emails
+* Instant results (No confiruation needed)
+* Protects mailto links, plain emails, email input fields, RSS feeds and much more
+* Autmoatic protection technique detection (Our plugin chooses automatically the best protection technique)
+* Exclude posts and pages from the protection
+* Automatically convert plain emails to mailto-links
 * Shortcode support: `[wpml_mailto]`
 * Template tag support: `wpml_mailto()` and `wpml_filter()`
 
-The plugin combines the best email protection methods (CSS and JavaScript techniques).
+The plugin combines the best email protection methods (CSS, PHP and JavaScript techniques).
 
 = Easy to use =
 The plugin works out-of-the-box to protect your email addresses. After activating the plugin all options are already set for protecting your emails and mailto links. Optionally you can also set some style options, like adding an icon.
@@ -35,12 +35,13 @@ The plugin works out-of-the-box to protect your email addresses. After activatin
 1. Click on the button `Add new`
 1. Search for `WP Mailto Links` and click 'Install Now' or click on the `upload` link to upload `wp-mailto-links.zip`
 1. Click on `Activate plugin`
+1. You will find the settings page under Settings -> WP Mailto Links or directly wihtin the menu.
 1. The plugin sets by default the right options for protecting your emails. All mailto links will automatically be scanned and protected.
 
 == Frequently Asked Questions ==
 
 = How does it work? =
-The plugin combines the best email protection methods (CSS and JavaScript techniques). Some of them are explained in [this article](http://perishablepress.com/press/2010/08/01/best-method-for-email-obfuscation/) by Jeff Starr.
+The plugin combines the best email protection methods (CSS and JavaScript techniques). All of them are explained in [this article](https://ironikus.com/docs/knowledge-base/what-will-be-protected/).
 
 A webpage contains code on the backside. In the code all email addresses will be obfuscated, to hide them from spambots. Only when people see the page and click on the mailto link, the encoded email address will be translated to a normal email address.
 
@@ -49,21 +50,10 @@ Off course by activating this plugin :) on your site. But even still it's not re
 It would be better to use the shortcode `[wpml_mailto]` and template tag `wpml_mailto()`, because when the plugin isn't active anymore, the email addresses would not be shown on your site.
 
 = How can I exclude pages? =
-You can exclude pages from being processed by adding a condition to the filter. Put this code in the `functions.php` and replace the values of `$exclude_pages` to the page ID's you would like to exclude.
+You can exclude pages within our settings page. Simply activate the button for advanced settings and you will see an input field. 
+In there, simply separate the page/post ids with a comma and save. 
 
-`function special_mailto($link, $display, $email, $attrs) {
-    global $post;
-    $exclude_pages = array(18, 22);
-
-    if (in_array($post->ID, $exclude_pages)) {
-        // use html entity to prevent replacing email by protection text
-        return str_replace('@', '@', $email);
-    }
-
-    return $link;
-}
-
-add_filter('wpml_mailto', 'special_mailto', 10, 4);`
+Here is an example: 12,455,19
 
 = Shortcode does not work in widgets. How can I make it work? =
 By default shortcodes are not applied to (text) widgets. To support that you can add it to the text widget filter ([for more](http://www.wprecipes.com/how-to-add-shortcodes-in-sidebar-widgets)).
@@ -74,11 +64,11 @@ Do you have a problem or found a bug, please [report it](https://wordpress.org/s
 == Screenshots ==
 
 1. Admin Settings Page
-2. Link Icon on the Site
+2. Encoded Emails with Link Icon on the Site
 
 == Documentation ==
 
-The plugin works out-of-the-box to protect your email addresses. All settings are default set to protect your email addresses automatically.
+The plugin works out-of-the-box to protect your email addresses. All settings are default set to protect your email addresses automatically with the best method available.
 If you want to manually create protected mailto links, just use the shortcode (`[wpml_mailto]`) within your posts or use the template tags (`wpml_mailto()` or `wpml_filter()`) in your theme files.
 
 = Shortcode `[wpml_mailto email="..."]...[/wpml_mailto]` =
@@ -104,19 +94,25 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
     }
 ?>`
 
-= Filter hook (deprecated) =
-The wpml_mailto filter gives you the possibility to manipulate output of the mailto created by the plugin. F.e. make all mailto links bold:
-`// define filter function
-public function special_mailto($link, $display, $email, $attrs) {
-    return '<b>'. $link .'</b>';
-}
-
-// hook it to "wpml_mailto" filter
-add_filter('wpml_mailto', 'special_mailto', 10, 4);`
-
-Now all mailto links will be wrapped around a `<b>`-tag.
-
 == Changelog ==
+
+= 3.0.0 =
+* PLEASE READ BEFORE UPATING: This plugin was completely rewritten and optimized. We also said goodbye to some features (mentioned below). Please test first.
+* IN CASE YOU FACE ANY ISSUES, YOU CAN REACH OUT TO US http://wordpress.org/support/plugin/wp-mailto-links#postform
+* Feature: Completely rewritten version of your beloved plugin
+* Feature: Feature to automatically detect the best protection method
+* Feature: Choose from four new settings to choose the strength of your protections
+* Feature: Added admin security check icon to encoded input fields and encoded plain emails/texts
+* Feature: Also protect every single shortcode content
+* Feature: Choose converting plain emails to mailto links as an additional feature
+* Feature: Change filter apply from "wp" to "init" (This allows you to also grab some ajax values to parse them directy encoded)
+* Tweak: Backward compatibility to the new plugin settings
+* Tweak: Remove custom icon functionality due to performance optimization (If you want it back, feel free to reach out)
+* Tweak: Completely performance optimized (We removed everything that is not necessary, included a better object caching and much more)
+* Tweak: Simplified settings (We cleaned the settings a lot, but you can still get some your old settings page back by activating the advanced checkbox :) )
+* Tweak: Optimized filter combinations
+* Dev: Code rewritten on the newest WordPress standards
+* Dev: Tons of new WordPress filters and actions (For a full list, please check https://ironikus.com/docs/article-categories/wp-mailto-links/)
 
 = 2.2.1 =
 * Fix: Show admin keylock icon relatively and not absolute

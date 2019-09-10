@@ -1,71 +1,60 @@
 <?php
-/**
- * Plugin Name:    WP Mailto Links - Manage & Protect Email Links
- * Version:        2.2.1
+ /**
+ * Plugin Name:    WP Mailto Links - Hide & Protect Email Links
+ * Version:        3.0.0
  * Plugin URI:     https://wordpress.org/plugins/wp-mailto-links/
- * Description:    Manage mailto links on your site and protect email addresses from spambots, set mail icon and more.
+ * Description:    Protect & encode email addresses and mailto links from spambots & spamming. Easy to use - encodes emails out-of-the-box.
  * Author:         Ironikus
  * Author URI:     https://ironikus.com/
  * License:        Dual licensed under the MIT and GPLv2+ licenses
  * Text Domain:    wp-mailto-links
+ * 
+ * License: GPL2
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with TMG User Filter. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// set constant
-if (!defined('WP_MAILTO_LINKS_FILE')) {
-  define('WP_MAILTO_LINKS_FILE', __FILE__);
-}
-if (!defined('WP_MAILTO_LINKS_DIR')) {
-  define('WP_MAILTO_LINKS_DIR', __DIR__);
-}
+// Exit if accessed directly.
+if ( !defined( 'ABSPATH' ) ) exit;
 
-// set class auto-loader
-if (!class_exists('WPRun_AutoLoader_0x5x0')) {
-  require_once WP_MAILTO_LINKS_DIR . '/classes/WPRun/AutoLoader.php';
-}
-WPRun_AutoLoader_0x5x0::register();
-WPRun_AutoLoader_0x5x0::addPath(WP_MAILTO_LINKS_DIR . '/classes');
+// Plugin name.
+define( 'WPMT_NAME',           'WP Mailto Links' );
 
+// Plugin version.
+define( 'WPMT_VERSION',        '3.0.0' );
+
+// Determines if the plugin is loaded
+define( 'WPMT_SETUP',          true );
+
+// Plugin Root File.
+define( 'WPMT_PLUGIN_FILE',    __FILE__ );
+
+// Plugin base.
+define( 'WPMT_PLUGIN_BASE',    plugin_basename( WPMT_PLUGIN_FILE ) );
+
+// Plugin Folder Path.
+define( 'WPMT_PLUGIN_DIR',     plugin_dir_path( WPMT_PLUGIN_FILE ) );
+
+// Plugin Folder URL.
+define( 'WPMT_PLUGIN_URL',     plugin_dir_url( WPMT_PLUGIN_FILE ) );
+
+// Plugin Root File.
+define( 'WPMT_TEXTDOMAIN',     'wp-mailto-links' );
 
 /**
-     * Create plugin components
-     */
+ * Load the main instance for our core functions
+ */
+require_once WPMT_PLUGIN_DIR . 'core/class-wp-mailto-links.php';
 
-// create text domain
-WPML_TextDomain::create();
-
-// create option
-$option = WPML_Option_Settings::create();
-
-// create register hooks
-WPML_RegisterHook_Activate::create(WP_MAILTO_LINKS_FILE, $option);
-WPML_RegisterHook_Uninstall::create(WP_MAILTO_LINKS_FILE, $option);
-
-if (is_admin()) {
-
-  // create meta boxes
-  $metaBoxes = WPML_AdminPage_Settings_MetaBoxes::create($option);
-
-  // create help tabs
-  $helpTabs = WPML_AdminPage_Settings_HelpTabs::create();
-
-  // create admin settings page
-  WPML_AdminPage_Settings::create($option, $metaBoxes, $helpTabs);
-} else {
-
-  // create custom filters final_output and widget_output
-  WPRun_Filter_FinalOutput_0x5x0::create();
-  WPRun_Filter_WidgetOutput_0x5x0::create();
-
-  // create email encoder
-  $emailEncoder = WPML_Front_Email::create($option);
-
-  // create front site
-  WPML_Front_Site::create($option, $emailEncoder);
-
-  // create shortcode
-  WPML_Shortcode_Mailto::create($option, $emailEncoder);
-
-  // create template tags
-  WPML_TemplateTag_Filter::create($option, $emailEncoder);
-  WPML_TemplateTag_Mailto::create($emailEncoder);
+/**
+ * The main function to load the only instance
+ * of our master class.
+ *
+ * @return object|WP_Mailto_Links
+ */
+function WPMT() {
+	return WP_Mailto_Links::instance();
 }
+
+WPMT();
