@@ -115,7 +115,7 @@ class WP_Mailto_Links_Run{
         }
 
         $wp_registered_widgets[ $widget_id ]['_wo_original_callback'] = $wp_registered_widgets[ $widget_id ]['callback'];
-        $wp_registered_widgets[ $widget_id ]['callback'] = $this->call_widget_callback();
+        $wp_registered_widgets[ $widget_id ]['callback'] = array( $this, 'call_widget_callback' );
 
         return $params;
 	}
@@ -129,17 +129,15 @@ class WP_Mailto_Links_Run{
 
 		$original_callback_params = func_get_args();
 		$original_callback = null;
+		
+		$widget_id = $original_callback_params[0]['widget_id'];
 
-		if( isset( $original_callback_params[0] ) ){
-			$widget_id = $original_callback_params[0]['widget_id'];
+		$original_callback = $wp_registered_widgets[ $widget_id ]['_wo_original_callback'];
+		$wp_registered_widgets[ $widget_id ]['callback'] = $original_callback;
 
-			$original_callback = $wp_registered_widgets[ $widget_id ]['_wo_original_callback'];
-			$wp_registered_widgets[ $widget_id ]['callback'] = $original_callback;
-	
-			$widget_id_base = $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base;
-		}
+		$widget_id_base = $wp_registered_widgets[ $widget_id ]['callback'][0]->id_base;
 
-        if ( ! empty( $original_callback ) && is_callable( $original_callback ) ) {
+        if ( is_callable( $original_callback ) ) {
             ob_start();
             call_user_func_array( $original_callback, $original_callback_params );
             $widget_output = ob_get_clean();

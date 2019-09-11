@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.2
 Tested up to: 5.2.3
-Stable tag: 3.0.1
+Stable tag: 3.0.2
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -95,6 +95,9 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+
+= 3.0.2 =
+* Fix: Widgets did not display in certain cases
 
 = 3.0.1 =
 * Tweak: Optimized PHP Docs
