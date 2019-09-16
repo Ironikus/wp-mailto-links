@@ -50,6 +50,7 @@ class WP_Mailto_Links_Run{
 			$hook_name = 'wp';
 		}
 		
+		add_action( 'wp', array( $this, 'display_email_image' ), WPMT()->settings->get_hook_priorities( 'display_email_image' ) );
 		add_action( 'init', array( $this, 'buffer_final_output' ), WPMT()->settings->get_hook_priorities( 'buffer_final_output' ) );
 		add_action( 'init', array( $this, 'add_custom_template_tags' ), WPMT()->settings->get_hook_priorities( 'add_custom_template_tags' ) );
 		add_action( $hook_name, array( $this, 'setup_single_filter_hooks' ), WPMT()->settings->get_hook_priorities( 'setup_single_filter_hooks' ) );
@@ -332,6 +333,45 @@ class WP_Mailto_Links_Run{
 
         return $content;
 	}
+	
+	/**
+	 * ######################
+	 * ###
+	 * #### EMAIL IMAGE
+	 * ###
+	 * ######################
+	 */
+
+	 public function display_email_image(){
+
+		if( ! isset( $_GET['wpmt_mail'] ) ){
+			return;
+		}
+
+		$email = sanitize_email( base64_decode( $_GET['wpmt_mail'] ) );
+		 
+		if( ! is_email( $email ) || ! isset( $_GET['wpmt_hash'] ) ){
+			return;
+		}
+
+		$hash = (string) $_GET['wpmt_hash'];
+		$secret = WPMT()->settings->get_email_image_secret();
+
+		if( WPMT()->validate->generate_email_signature( $email, $secret ) !== $hash ){
+			wp_die( WPMT()->helpers->translate('Your signture is invalid.', 'plugin-frontend') );
+		}
+
+		$image = WPMT()->validate->email_to_image( $email );
+
+		if( empty( $image ) ){
+			wp_die( WPMT()->helpers->translate('Your email could not be converted.', 'plugin-frontend') );
+		}
+
+		header('Content-type: image/png');
+		echo $image;
+		die();
+
+	 }
 	
 	/**
 	 * ######################

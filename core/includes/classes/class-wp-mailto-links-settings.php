@@ -44,6 +44,7 @@ class WP_Mailto_Links_Settings{
 		$this->template_tags 			= array( 'wpml_filter' => 'template_tag_wpmt_filter', 'wpml_mailto' => 'template_tag_wpml_mailto' );
 		$this->settings_key        		= 'wp-mailto-links';
 		$this->version_key        		= 'wp-mailto-links-version';
+		$this->image_secret_key     	= 'wp-mailto-links-img-key';
 		$this->previous_version        	= null;
 		$this->hook_priorities        	= array(
 			'buffer_final_output' => 1000,
@@ -56,14 +57,19 @@ class WP_Mailto_Links_Settings{
 			'filter_content' => 100,
 			'first_version_init' => 100,
 			'version_update' => 100,
+			'display_email_image' => 10,
 		);
 
 		//Regex
-		$this->email_regex 				= '([_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,}))';
-	
+		$this->email_regex 			= '([_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,}))';
+		$this->soft_attribute_regex = array(
+			'woocommerce_variation_attribute_tag' => '/data-product_variations="([^"]*)"/i',
+		);
+
 		//Load data
 		$this->settings        			= $this->load_settings();
 		$this->version        			= $this->load_version();
+		$this->email_image_secret       = $this->load_email_image_secret();
 	}
 
 	/**
@@ -152,7 +158,12 @@ class WP_Mailto_Links_Settings{
 					'convert_plain_to_mailto' => array(
 						'advanced' 	  => true,
 						'label' => WPMT()->helpers->translate( 'plain emails by converting them to mailto links', 'wpmt-settings-convert_plain_to_mailto-label' ),
-						'description' => WPMT()->helpers->translate( 'Plain emails will be automatically converted to mailto links where possible. (Requires javascript)', 'wpmt-settings-convert_plain_to_mailto-tip' )
+						'description' => WPMT()->helpers->translate( 'Plain emails will be automatically converted to mailto links where possible.', 'wpmt-settings-convert_plain_to_mailto-tip' )
+					),
+					'convert_plain_to_image' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'plain emails by converting them to png images', 'wpmt-settings-convert_plain_to_mailto-label' ),
+						'description' => WPMT()->helpers->translate( 'Plain emails will be automatically converted to png images where possible.', 'wpmt-settings-convert_plain_to_mailto-tip' )
 					),
 					'protect_shortcode_tags' => array(
 						'advanced' 	  => true,
@@ -163,6 +174,49 @@ class WP_Mailto_Links_Settings{
 						'advanced' 	  => true,
 						'label' => WPMT()->helpers->translate( 'emails from "init" hook', 'wpmt-settings-filter_hook-label' ),
 						'description' => WPMT()->helpers->translate( 'Check this option if you want to register the email filters on the "init" hook instead of the "wp" hook.', 'wpmt-settings-filter_hook-tip' )
+					),
+					'deactivate_rtl' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'mailto links without CSS direction', 'wpmt-settings-filter_hook-label' ),
+						'description' => WPMT()->helpers->translate( 'Check this option if your site does not support CSS directions.', 'wpmt-settings-filter_hook-tip' )
+					),
+				 ),
+				'required'    => false,
+			),
+
+			'image_settings' => array(
+				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
+				'id'          => 'image_settings',
+				'type'        => 'multi-input',
+				'input-type'  => 'text',
+				'advanced' 	  => true,
+				'title'       => WPMT()->helpers->translate( 'Image settings', 'wpmt-settings-filter_body' ),
+				'label'       => WPMT()->helpers->translate( 'Customize the settings for dynamically created images.', 'wpmt-settings-filter_body-label' ),
+				'inputs' 	  => array(
+					'image_color' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Image Colors', 'wpmt-settings-image_color-label' ),
+						'description' => WPMT()->helpers->translate( 'Please include RGB colors, comme saparated. E.g.: 0,0,255', 'wpmt-settings-image_color-tip' )
+					),
+					'image_background_color' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Image Background Colors', 'wpmt-settings-image_background_color-label' ),
+						'description' => WPMT()->helpers->translate( 'Please include RGB colors, comme saparated. E.g.: 0,0,255', 'wpmt-settings-image_background_color-tip' )
+					),
+					'image_text_opacity' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Text Opacity', 'wpmt-settings-image_text_opacity-label' ),
+						'description' => WPMT()->helpers->translate( 'Change the text opacity for the created images. 0 = not transparent - 127 = completely transprent', 'wpmt-settings-image_text_opacity-tip' )
+					),
+					'image_background_opacity' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Background Opacity', 'wpmt-settings-image_background_opacity-label' ),
+						'description' => WPMT()->helpers->translate( 'Change the background opacity for the created images. 0 = not transparent - 127 = completely transprent', 'wpmt-settings-image_background_opacity-tip' )
+					),
+					'image_font_size' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Font Size', 'wpmt-settings-image_font_size-label' ),
+						'description' => WPMT()->helpers->translate( 'Change the font size of the image text. Default: 4 - You can choose from 1 - 5', 'wpmt-settings-image_font_size-tip' )
 					),
 				 ),
 				'required'    => false,
@@ -240,18 +294,23 @@ class WP_Mailto_Links_Settings{
 
 		//End Migrate Old Plugin
 
+		$default_values = array(
+			'protect' 				=> 1,
+			'filter_rss' 			=> 1,
+			'protect_using' 		=> 'with_javascript',
+			'class_name' 			=> 'mail-link',
+			'protection_text' 		=> '*protected email*',
+			'image_color' 			=> '0,0,0',
+			'image_background_color'=> '0,0,0',
+			'image_text_opacity'	=> '0',
+			'image_background_opacity'	=> '127',
+			'image_font_size'	=> '4',
+		);
 		$values = get_option( $this->settings_key );
 
 		if( empty( $values ) && ! is_array( $values ) ){
-			$values = array(
-				'protect' 				=> 1,
-				'filter_rss' 			=> 1,
-				'protect_using' 		=> 'with_javascript',
-				'class_name' 			=> 'mail-link',
-				'protection_text' 		=> '*protected email*',
-			);
-
-			update_option( $this->settings_key, $values );
+			update_option( $this->settings_key, $default_values );
+			$values = $default_values;
 		}
 
 		//Bakwards compatibility
@@ -263,7 +322,45 @@ class WP_Mailto_Links_Settings{
 		if( ! isset( $values['protect'] ) || (string) $values['protect'] === '0' ){
 			$values['protect'] = 3;
 		}
-		//Backwards compatibility
+		///Backwards compatibility
+
+		//Value corrections
+		if( ! isset( $values['image_color'] ) ){
+			$values['image_color'] = $default_values['image_color'];
+		}
+		$image_color = explode( ',', $values['image_color'] );
+		if( count( $image_color ) != 3 ){
+			$values['image_color'] = $default_values['image_color'];
+		}
+		foreach( explode( ',', $values['image_color'] ) as $image_color_key => $image_color_single ){
+			if( ! is_numeric( trim( $image_color_single ) ) ){
+				$values['image_color'] = $default_values['image_color'];
+			}
+		}
+
+		if( ! isset( $values['image_background_color'] ) ){
+			$values['image_background_color'] = $default_values['image_background_color'];
+		}
+		$image_background_color = explode( ',', $values['image_background_color'] );
+		if( count( $image_background_color ) != 3 ){
+			$values['image_background_color'] = $default_values['image_background_color'];
+		}
+		foreach( explode( ',', $values['image_background_color'] ) as $image_background_color_key => $image_background_color_single ){
+			if( ! is_numeric( trim( $image_background_color_single ) ) ){
+				$values['image_background_color'] = $default_values['image_background_color'];
+			}
+		}
+
+		if( ! isset( $values['image_text_opacity'] ) || ! is_numeric( $values['image_text_opacity'] ) ){
+			$values['image_text_opacity'] = $default_values['image_text_opacity'];
+		}
+		if( ! isset( $values['image_background_opacity'] ) || ! is_numeric( $values['image_background_opacity'] ) ){
+			$values['image_background_opacity'] = $default_values['image_background_opacity'];
+		}
+		if( ! isset( $values['image_font_size'] ) || ! is_numeric( $values['image_font_size'] ) ){
+			$values['image_font_size'] = $default_values['image_font_size'];
+		}
+		///Value corrections
 
 		foreach( $fields as $key => $field ){
 			if( $field['type'] === 'multi-input' ){
@@ -318,6 +415,29 @@ class WP_Mailto_Links_Settings{
 		}
 
 		return $current_version;
+	 }
+
+	 public function load_email_image_secret(){
+
+		if( ! (bool) $this->get_setting( 'convert_plain_to_image', true, 'filter_body' ) ){
+			return false;
+		}
+
+		$image_descret = get_option( $this->get_image_secret_key() );
+
+		if( ! empty( $image_descret ) ){
+			return $image_descret;
+		}
+
+		$key = '';
+
+		for ($i = 0; $i < 265; $i++) {
+			$key .= chr(mt_rand(33, 126));
+		}
+
+		update_option( $this->get_image_secret_key(), $key );
+
+		return $key;
 	 }
 
 	 /**
@@ -411,6 +531,24 @@ class WP_Mailto_Links_Settings{
 	}
 
 	/**
+	 * Return the image_secret_key
+	 *
+	 * @return string - the image_secret_key
+	 */
+	public function get_image_secret_key(){
+		return $this->image_secret_key;
+	}
+
+	/**
+	 * Return the email_image_secret
+	 *
+	 * @return string - the email_image_secret
+	 */
+	public function get_email_image_secret(){
+		return $this->email_image_secret;
+	}
+
+	/**
 	 * Return the version
 	 *
 	 * @return string - the version
@@ -460,6 +598,27 @@ class WP_Mailto_Links_Settings{
 		}
 
 		return apply_filters( 'wpmt/settings/get_email_regex', $return, $include );
+	}
+	
+	/**
+	 * Get Woocommerce variation attribute regex
+	 * 
+     * @param boolean $include
+     * @return string
+     */
+    public function get_soft_attribute_regex( $single = null ){
+
+		$return = $this->soft_attribute_regex;
+
+		if( $single !== null ){
+			if( isset( $this->soft_attribute_regex[ $single ] ) ){
+				$return = $this->soft_attribute_regex[ $single ];
+			} else {
+				$return = false;
+			}
+		}
+
+		return apply_filters( 'wpmt/settings/get_soft_attribute_regex', $return, $single );
     }
 
 	/**

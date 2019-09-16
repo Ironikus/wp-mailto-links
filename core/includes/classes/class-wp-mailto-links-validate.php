@@ -73,9 +73,11 @@ class WP_Mailto_Links_Validate{
 
         //Filter head area
         $filtered_head = $this->filter_plain_emails( $htmlSplit[0], null, $head_encoding_method );
-
+        
         //Filter body
-        $filtered_body = $this->filter_content( $htmlSplit[4], $protect_using );
+        //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
+        $filtered_body = $this->filter_soft_attributes( $htmlSplit[4], 'char_encode' );
+        $filtered_body = $this->filter_content( $filtered_body, $protect_using );
 
         $filtered_content = $filtered_head . $htmlSplit[1] . $filtered_body;
         return $filtered_content;
@@ -92,6 +94,10 @@ class WP_Mailto_Links_Validate{
         $filtered = $content;
         $self = $this;
         $convert_plain_to_mailto = (bool) WPMT()->settings->get_setting( 'convert_plain_to_mailto', true, 'filter_body' );
+        $convert_plain_to_image = (bool) WPMT()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
+
+        //Soft attributes always need to be protected using only the char encode method since otherwise the logic breaks
+        $filtered = $this->filter_soft_attributes( $filtered, 'char_encode' );
 
         switch( $protect_using ){
             case 'char_encode':
@@ -102,11 +108,30 @@ class WP_Mailto_Links_Validate{
                 break;
             case 'without_javascript':
                 $filtered = $this->filter_input_fields( $filtered, $protect_using );
-                $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
+
+                if( $convert_plain_to_image ){
+                    $replace_by = 'convert_image';
+                } else {
+                    $replace_by = 'char_encode';
+                }
+//Todo check why it is still using javascript in frontend
+                $filtered = $this->filter_mailto_links( $filtered, 'without_javascript' );
+
+                if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
+                    $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
+                        return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'without_javascript' );
+                    }, $replace_by);
+                }
                 break;
             case 'with_javascript':
                 $filtered = $this->filter_input_fields( $filtered, $protect_using );
                 $filtered = $this->filter_mailto_links( $filtered );
+
+                if( $convert_plain_to_image ){
+                    $replace_by = 'convert_image';
+                } else {
+                    $replace_by = 'char_encode';
+                }
 
                 if( $convert_plain_to_mailto ){
                     if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
@@ -114,10 +139,10 @@ class WP_Mailto_Links_Validate{
                             return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ) );
                         });
                     } else {
-                        $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
+                        $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
                     }
                 } else {
-                    $filtered = $this->filter_plain_emails( $filtered, null, 'char_encode' );
+                    $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
                 }
 
                 break;
@@ -129,18 +154,24 @@ class WP_Mailto_Links_Validate{
     /**
      * Emails will be replaced by '*protected email*'
      * @param string           $content
-     * @param string|callable  $replaceBy  Optional
+     * @param string|callable  $replace_by  Optional
+     * @param string           $protection_method  Optional
+     * @param mixed            $security_check  Optional
      * @return string
      */
-    public function filter_plain_emails($content, $replaceBy = null, $protection_method = 'default' ){
+    public function filter_plain_emails($content, $replace_by = null, $protection_method = 'default', $security_check = 'default' ){
 
-        $security_check = (bool) WPMT()->settings->get_setting( 'security_check', true );
-
-        if ( $replaceBy === null ) {
-            $replaceBy = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
+        if( $security_check === 'default' ){
+            $security_check = (bool) WPMT()->settings->get_setting( 'security_check', true );
         }
 
-        return preg_replace_callback( WPMT()->settings->get_email_regex(), function ( $matches ) use ( $replaceBy, $protection_method, $security_check ) {
+        if ( $replace_by === null ) {
+            $replace_by = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
+        }
+
+        $self = $this;
+
+        return preg_replace_callback( WPMT()->settings->get_email_regex(), function ( $matches ) use ( $replace_by, $protection_method, $security_check, $self ) {
             // workaround to skip responsive image names containing @
             $extention = strtolower( $matches[4] );
             $excludedList = array('.jpg', '.jpeg', '.png', '.gif');
@@ -149,14 +180,23 @@ class WP_Mailto_Links_Validate{
                 return $matches[0];
             }
 
-            if ( is_callable( $replaceBy ) ) {
-                return call_user_func( $replaceBy, $matches, $protection_method );
+            if ( is_callable( $replace_by ) ) {
+                return call_user_func( $replace_by, $matches, $protection_method );
             }
 
             if( $protection_method === 'char_encode' ){
                 $protected_return = antispambot( $matches[0] );
+            } elseif( $protection_method === 'convert_image' ){
+
+                $image_link = $self->generate_email_image_url( $matches[0] );
+                if( ! empty( $image_link ) ){
+                    $protected_return = '<img src="' . $image_link . '" />';
+                } else {
+                    $protected_return = antispambot( $matches[0] );
+                }
+                
             } else {
-                $protected_return = $replaceBy;
+                $protected_return = $replace_by;
             }
 
             // mark link as successfullly encoded (for admin users)
@@ -200,12 +240,12 @@ class WP_Mailto_Links_Validate{
      * @param string $content
      * @return string
      */
-    public function filter_mailto_links( $content ){
+    public function filter_mailto_links( $content, $protection_method = null ){
         $self = $this;
 
-        $callbackEncodeMailtoLinks = function ( $match ) use ( $self ) {
+        $callbackEncodeMailtoLinks = function ( $match ) use ( $self, $protection_method ) {
             $attrs = shortcode_parse_atts( $match[1] );
-            return $self->create_protected_mailto( $match[4], $attrs );
+            return $self->create_protected_mailto( $match[4], $attrs, $protection_method );
         };
 
         $regexpMailtoLink = '/<a[\s+]*(([^>]*)href=["\']mailto\:([^>]*)["\'])>(.*?)<\/a[\s+]*>/is';
@@ -228,6 +268,30 @@ class WP_Mailto_Links_Validate{
         }
         
         return $filtered;
+    }
+
+    /**
+     * Filter plain emails using soft attributes
+     * 
+     * @param string $content - the content that should be soft filtered
+     * @param string $protection_method - The method (E.g. char_encode)
+     * @return string
+     */
+    public function filter_soft_attributes( $content, $protection_method ){
+        $soft_attributes = WPMT()->settings->get_soft_attribute_regex();
+
+        foreach( $soft_attributes as $ident => $regex ){
+
+            $array = array();
+            preg_match( $regex, $content, $array ) ;
+
+            foreach( $array as $single ){
+                $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
+            }
+
+        }
+
+        return $content;
     }
 
     /**
@@ -303,12 +367,13 @@ class WP_Mailto_Links_Validate{
      * @param array $attrs Optional
      * @return string
      */
-    public function create_protected_mailto( $display, $attrs = array() ){
+    public function create_protected_mailto( $display, $attrs = array(), $protection_method = null ){
         $email     = '';
         $class_ori = ( empty( $attrs['class'] ) ) ? '' : $attrs['class'];
         $custom_class = (string) WPMT()->settings->get_setting( 'class_name', true );
         $activated_protection = ( in_array( (int) WPMT()->settings->get_setting( 'protect', true ), array( 1, 2 ) ) ) ? true : false;
         $security_check = (string) WPMT()->settings->get_setting( 'security_check', true );
+        $convert_plain_to_image = (bool) WPMT()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
 
         // set user-defined class
         if ( $custom_class && strpos( $class_ori, $custom_class ) === FALSE ) {
@@ -328,14 +393,19 @@ class WP_Mailto_Links_Validate{
 
         foreach ( $attrs AS $key => $value ) {
             if ( strtolower( $key ) == 'href' && $activated_protection ) {
-                // get email from href
-                $email = substr($value, 7);
+                if( $convert_plain_to_image || $protection_method === 'without_javascript' ){
+                    $link .= $key . '="' . antispambot( $value ) . '" ';
+                } else {
+                    // get email from href
+                    $email = substr($value, 7);
 
-                $encoded_email = $this->get_encoded_email( $email );
+                    $encoded_email = $this->get_encoded_email( $email );
 
-                // set attrs
-                $link .= 'href="javascript:;" ';
-                $link .= 'data-enc-email="' . $encoded_email . '" ';
+                    // set attrs
+                    $link .= 'href="javascript:;" ';
+                    $link .= 'data-enc-email="' . $encoded_email . '" ';
+                }
+                
             } else {
                 $link .= $key . '="' . $value . '" ';
             }
@@ -374,11 +444,22 @@ class WP_Mailto_Links_Validate{
      * @param string|array $display
      * @return string Protected display
      */
-    public function get_protected_display( $display ){
+    public function get_protected_display( $display, $protection_method = null ){
+
+        $convert_plain_to_image = (bool) WPMT()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
+        $deactivate_rtl = (bool) WPMT()->settings->get_setting( 'deactivate_rtl', true, 'filter_body' );
 
         // get display out of array (result of preg callback)
-        if (is_array($display)) {
+        if ( is_array( $display ) ) {
             $display = $display[0];
+        }
+
+        if( $convert_plain_to_image ){
+            return '<img src="' . $this->generate_email_image_url( $display ) . '" />';
+        }
+
+        if( $protection_method === 'without_javascript' ){
+            return '<img src="' . $this->generate_email_image_url( $display ) . '" />';
         }
 
         
@@ -390,21 +471,108 @@ class WP_Mailto_Links_Validate{
         $offset = 0;
         $dummy_data = time();
         $protected = '';
+        $protection_classes = 'wpmt';
 
-        // reverse string ( will be corrected with CSS )
-        $rev = strrev( $stripped_display );
+        if( $deactivate_rtl ){
+            $rev = $stripped_display;
+            $protection_classes .= ' wpmt-nrtl';
+        } else {
+            // reverse string ( will be corrected with CSS )
+            $rev = strrev( $stripped_display );
+            $protection_classes .= ' wpml-rtl';
+        }
+       
 
         while ( $offset < $length ) {
-            $protected .= antispambot( substr( $rev, $offset, $interval ) );
+            $protected .= '<span class="wpml-sd">' . antispambot( substr( $rev, $offset, $interval ) ) . '</span>';
 
             // setup dummy content
             $protected .= '<span class="wpml-nodis">' . $dummy_data . '</span>';
             $offset += $interval;
         }
 
-        $protected = '<span class="wpml-rtl">' . $protected . '</span>';
+        $protected = '<span class="' . $protection_classes . '">' . $protected . '</span>';
 
         return $protected;
     }
+
+    public function email_to_image( $email, $image_string_color = 'default', $image_background_color = 'default', $alpha_string = 0, $alpha_fill = 127, $font_size = 4 ){
+        
+        $setting_image_string_color = (string) WPMT()->settings->get_setting( 'image_color', true, 'image_settings' );
+        $setting_image_background_color = (string) WPMT()->settings->get_setting( 'image_background_color', true, 'image_settings' );
+        $image_text_opacity = (int) WPMT()->settings->get_setting( 'image_text_opacity', true, 'image_settings' );
+        $image_background_opacity = (int) WPMT()->settings->get_setting( 'image_background_opacity', true, 'image_settings' );
+        $image_font_size = (int) WPMT()->settings->get_setting( 'image_font_size', true, 'image_settings' );
+
+        if( $image_background_color === 'default' ){
+            $image_background_color = $setting_image_background_color;
+        } else {
+            $image_background_color = '0,0,0';
+        }
+
+        $colors = explode( ',', $image_background_color );
+        $bg_red = $colors[0];
+        $bg_green = $colors[1];
+        $bg_blue = $colors[2];
+
+        if( $image_string_color === 'default' ){
+            $image_string_color = $setting_image_string_color;
+        } else {
+            $image_string_color = '0,0,0';
+        }
+
+        $colors = explode( ',', $image_string_color );
+        $string_red = $colors[0];
+        $string_green = $colors[1];
+        $string_blue = $colors[2];
+
+        if( ! empty( $image_text_opacity ) && $image_text_opacity >= 0 && $image_text_opacity <= 127 ){
+            $alpha_string = intval( $image_text_opacity );
+        }
+
+        if( ! empty( $image_background_opacity ) && $image_background_opacity >= 0 && $image_background_opacity <= 127 ){
+            $alpha_fill = intval( $image_background_opacity );
+        }
+
+        if( ! empty( $image_font_size ) && $image_font_size >= 1 && $image_font_size <= 5 ){
+            $font_size = intval( $image_font_size );
+        }
+
+        $img = imagecreatetruecolor( imagefontwidth( $font_size ) * strlen( $email ), imagefontheight( $font_size ) );
+        imagesavealpha( $img, true );
+        imagefill( $img, 0, 0, imagecolorallocatealpha ($img, $bg_red, $bg_green, $bg_blue, $alpha_fill ) );
+        imagestring( $img, $font_size, 0, 0, $email, imagecolorallocatealpha( $img, $string_red, $string_green, $string_blue, $alpha_string ) );
+        ob_start();
+        imagepng( $img );
+        imagedestroy( $img );
+
+        return ob_get_clean ();
+    }
+
+    public function generate_email_signature( $email, $secret ) {
+        
+        if( ! $secret ){
+            return false;
+        }
+
+		$hash_signature = apply_filters( 'wpmt/validate/email_signature', 'sha256', $email );
+
+		return base64_encode( hash_hmac( $hash_signature, $email, $secret, true ) );
+	}
+
+    public function generate_email_image_url( $email ) {
+        
+        if( empty( $email ) || ! is_email( $email ) ){
+            return false;
+        }
+
+        $secret = WPMT()->settings->get_email_image_secret();
+        $signature = $this->generate_email_signature( $email, $secret );
+        $url = home_url() . '?wpmt_mail=' . urlencode( base64_encode( $email ) ) . '&wpmt_hash=' . urlencode( $signature );
+
+		$url = apply_filters( 'wpmt/validate/generate_email_image_url', $url, $email );
+
+		return $url;
+	}
 
 }

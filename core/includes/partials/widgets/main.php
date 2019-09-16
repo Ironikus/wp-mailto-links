@@ -60,20 +60,22 @@ $advanced_settings = (bool) WPMT()->settings->get_setting( 'advanced_settings', 
                                             }
                                             ?>
                                             <p <?php echo $hide_sub_layer; ?>>
-                                                <input id="<?php echo $si_name . '_' . $si_key; ?>" name="wp-mailto-links[<?php echo $si_name; ?>]" type="<?php echo $setting['input-type']; ?>" class="regular-text" value="<?php echo $mi_value; ?>" <?php echo $mi_is_checked; ?> />
+                                                <input id="<?php echo $si_name . '_' . $si_key; ?>" name="<?php echo $this->settings_key; ?>[<?php echo $si_name; ?>]" type="<?php echo $setting['input-type']; ?>" class="regular-text" value="<?php echo $mi_value; ?>" <?php echo $mi_is_checked; ?> />
                                                 <label for="<?php echo $si_name . '_' . $si_key; ?>">
                                                     <?php echo $data['label']; ?>
                                                 </label>
                                             </p>
                                             <?php if( isset( $data['description'] ) ) : ?>
                                             <p class="description" <?php echo $hide_sub_layer; ?>>
-                                                <input name="wp-mailto-links-hidden-margin" type="radio" class="regular-text" value="" style="visibility:hidden !important;pointer-events:none !important;"/>
+                                                <?php if( in_array( $setting['input-type'], array( 'checkbox', 'radio' ) ) ) : ?>
+                                                    <input name="wp-mailto-links-hidden-margin" type="radio" class="regular-text" value="" style="visibility:hidden !important;pointer-events:none !important;"/>
+                                                <?php endif; ?>
                                                 <?php echo $data['description']; ?>
                                             </p>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     <?php else : ?>
-                                        <input id="<?php echo $setting['id']; ?>" name="wp-mailto-links[<?php echo $setting_name; ?>]" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
+                                        <input id="<?php echo $setting['id']; ?>" name="<?php echo $this->settings_key; ?>[<?php echo $setting_name; ?>]" type="<?php echo $setting['type']; ?>" class="regular-text" value="<?php echo $value; ?>" <?php echo $is_checked; ?> />
                                         <?php if( isset( $setting['label'] ) ) : ?>
                                             <label for="<?php echo $setting_name; ?>">
                                                 <?php echo $setting['label']; ?>

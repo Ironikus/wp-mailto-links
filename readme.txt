@@ -1,9 +1,9 @@
-=== WP Mailto Links - Manage & Protect Email Links ===
+=== WP Mailto Links - Manage & Protect Emails ===
 Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
-Requires at least: 4.2
+Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,6 +20,8 @@ Protect and encode email addresses and mailto links from spambots, spamming and 
 * Autmoatic protection technique detection (Our plugin chooses automatically the best protection technique)
 * Exclude posts and pages from the protection
 * Automatically convert plain emails to mailto-links
+* Automatically convert plain emails to png images
+* Deactivate CSS directions manually for backwards compatibility
 * Shortcode support: `[wpml_mailto]`
 * Template tag support: `wpml_mailto()` and `wpml_filter()`
 
@@ -96,6 +98,21 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 
 == Changelog ==
 
+= 3.0.3 =
+* Feature: Convert plain emails to PNG images (Custom settings item in advanced settings)
+* Feature: Settings to customize the created PNG Email Images 
+* Feature: New setting to deactivate CSS directions manually
+* Tweak: Optimize automatically chosen methods and cross-setting usage
+* Tweak: Updated minimum PHP version
+* Tweak: Include collaboration with MailOptin
+* Tweak: Correct certain text issues
+* Fix: Prevent Woocommerce variation attributes containing emails from breaking
+* Fix: Correct layout issue if multi-inout with text fields is chosen
+* Dev: Optimize code for WordPress standards
+* Dev: New filter: wpmt/validate/email_signature (https://ironikus.com/docs/knowledge-base/filter-email-to-image-url-signature/)
+* Dev: New filter: wpmt/validate/generate_email_image_url (https://ironikus.com/docs/knowledge-base/filter-email-to-image-url/)
+* Dev: New filter: wpmt/settings/get_soft_attribute_regex (https://ironikus.com/docs/knowledge-base/filter-regex-soft-attributes/)
+
 = 3.0.2 =
 * Fix: Widgets did not display in certain cases
 
@@ -118,6 +135,7 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 * Tweak: Completely performance optimized (We removed everything that is not necessary, included a better object caching and much more)
 * Tweak: Simplified settings (We cleaned the settings a lot, but you can still get some your old settings page back by activating the advanced checkbox :) )
 * Tweak: Optimized filter combinations
+* Tweak: Allow custom settings key to be also applied within the settings form dynamically
 * Dev: Code rewritten on the newest WordPress standards
 * Dev: Tons of new WordPress filters and actions (For a full list, please check https://ironikus.com/docs/article-categories/wp-mailto-links/)
 

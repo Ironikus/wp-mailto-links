@@ -108,6 +108,8 @@ if ( ! class_exists( 'WP_Mailto_Links' ) ) :
 			require_once WPMT_PLUGIN_DIR . 'core/includes/classes/class-wp-mailto-links-settings.php';
 			require_once WPMT_PLUGIN_DIR . 'core/includes/classes/class-wp-mailto-links-validate.php';
 
+			require_once WPMT_PLUGIN_DIR . 'core/includes/integrations/loader.php';
+
 			if( is_admin() ){
 				require_once WPMT_PLUGIN_DIR . 'core/includes/classes/class-wp-mailto-links-run-admin.php';
 			} else {

@@ -8,6 +8,10 @@ span.wpml-rtl {
     display:inline !important; 
 }
 
+span.wpmt-nrtl { 
+    word-break: break-all !important;
+}
+
 .wpml-encoded { 
     position:relative; 
     margin-top:-0.3em; 
