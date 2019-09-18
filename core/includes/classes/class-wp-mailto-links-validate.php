@@ -54,6 +54,9 @@ class WP_Mailto_Links_Validate{
       * @return string - The filtered content
       */
     public function filter_page( $content, $protect_using ){
+
+        $content = $this->filter_soft_dom_attributes( $content, 'char_encode' );
+
         $htmlSplit = preg_split( '/(<body(([^>]*)>))/is', $content, null, PREG_SPLIT_DELIM_CAPTURE );
         
         if ( count( $htmlSplit ) < 4 ) {
@@ -114,7 +117,7 @@ class WP_Mailto_Links_Validate{
                 } else {
                     $replace_by = 'char_encode';
                 }
-//Todo check why it is still using javascript in frontend
+
                 $filtered = $this->filter_mailto_links( $filtered, 'without_javascript' );
 
                 if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
@@ -291,6 +294,29 @@ class WP_Mailto_Links_Validate{
 
         }
 
+        return $content;
+    }
+
+    /**
+     * Filter plain emails using soft dom attributes
+     * 
+     * @param string $content - the content that should be soft filtered
+     * @param string $protection_method - The method (E.g. char_encode)
+     * @return string
+     */
+    public function filter_soft_dom_attributes( $content, $protection_method ){
+
+        if( class_exists( 'DOMDocument' ) ){
+            $dom = new DOMDocument();
+            @$dom->loadHTML($content);
+    
+            //Soft-encode scripts
+            $script = $dom->getElementsByTagName('script');
+            foreach($script as $item){
+                $content = str_replace( $item->nodeValue, $this->filter_plain_emails( $item->nodeValue, null, $protection_method, false ), $content );
+            }
+        }
+        
         return $content;
     }
 

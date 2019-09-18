@@ -101,7 +101,8 @@ class WP_Mailto_Links_Settings{
 					),
 					2 => array(
 						'label' => WPMT()->helpers->translate( 'Wordpress filters', 'wpmt-settings-protect-label' ),
-						'description' => WPMT()->helpers->translate('Secure only mails that occur within WordPress filters.', 'wpmt-settings-protect-tip')
+						'description' => WPMT()->helpers->translate('Secure only mails that occur within WordPress filters. (Not recommended)', 'wpmt-settings-protect-tip'),
+						'advanced' 	  => true,
 					),
 					3 => array(
 						'label' => WPMT()->helpers->translate( 'Don\'t do anything.', 'wpmt-settings-protect-label' ),

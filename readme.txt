@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -97,6 +97,11 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+
+= 3.0.4 =
+* Feature: Soft-encode for script tags to preserve the javascript logic
+* Tweak: Set WordPress filter settings item to advanced (since it is not recommended)
+* Fix: Fix ReferenceError: jQuery is not defined for the frontend scripts 
 
 = 3.0.3 =
 * Feature: Convert plain emails to PNG images (Custom settings item in advanced settings)
