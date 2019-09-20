@@ -7,7 +7,10 @@ span.wpml-rtl {
     direction:rtl !important; 
     display:inline !important; 
 }
-
+span.wpml-rtl span.wpml-sd, span.wpmt-nrtl span.wpml-sd{
+	display:inline !important;
+	padding-left:0 !important;
+}
 span.wpmt-nrtl { 
     word-break: break-all !important;
 }

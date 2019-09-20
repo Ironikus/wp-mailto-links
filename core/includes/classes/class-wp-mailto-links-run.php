@@ -59,6 +59,7 @@ class WP_Mailto_Links_Run{
 
 		//Add shortcodes
 		add_shortcode( 'wpml_mailto', array( $this, 'mailto_shortcode' ) );
+		add_shortcode( 'wpmt_protect', array( $this, 'protect_content_shortcode' ) );
 
 	}
 
@@ -312,7 +313,7 @@ class WP_Mailto_Links_Run{
 	 */
 
 	 /**
-     * Handle shortcode
+     * Handle mailto shortcode
      * @param array   $atts
      * @param string  $content
      */
@@ -330,6 +331,29 @@ class WP_Mailto_Links_Run{
         }
 
         $content = WPMT()->validate->create_protected_mailto( $content, $atts );
+
+        return $content;
+	}
+
+	 /**
+     * Handle content filter shortcode
+     * @param array   $atts
+     * @param string  $content
+     */
+    public function protect_content_shortcode( $atts, $content = null ){
+		$protect = (int) WPMT()->settings->get_setting( 'protect', true );
+		$protect_using = (string) WPMT()->settings->get_setting( 'protect_using', true );
+		$protection_activated = ( $protect === 1 || $protect === 2 ) ? true : false;
+
+        if ( ! $protection_activated ) {
+			return $content;
+		}
+		
+		if( isset( $atts['protect_using'] ) ){
+			$protect_using = $atts['protect_using'];
+		}
+
+        $content = WPMT()->validate->filter_content( $content, $protect_using );
 
         return $content;
 	}

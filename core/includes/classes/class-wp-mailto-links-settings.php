@@ -242,7 +242,7 @@ class WP_Mailto_Links_Settings{
 				'title'       => WPMT()->helpers->translate('Set protection text *', 'wpmt-settings-class_name'),
 				'placeholder' => '',
 				'required'    => false,
-				'description' => WPMT()->helpers->translate('This text will be shown for protected emailaddresses.', 'wpmt-settings-class_name-tip')
+				'description' => WPMT()->helpers->translate('This text will be shown for protected email addresses and within noscript tags.', 'wpmt-settings-class_name-tip')
 			),
 
 			'class_name' => array(

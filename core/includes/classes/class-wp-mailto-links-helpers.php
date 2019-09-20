@@ -217,5 +217,24 @@ class WP_Mailto_Links_Helpers {
         }
 	}
 
+	/**
+     * This is the opponent of JavaScripts decodeURIComponent()
+     * @link http://stackoverflow.com/questions/1734250/what-is-the-equivalent-of-javascripts-encodeuricomponent-in-php
+     * @param string $str
+     * @return string
+     */
+    public function encode_uri_components( $content ) {
+        $revert = array( '%21'=>'!', '%2A'=>'*', '%27'=>"'", '%28'=>'(', '%29'=>')' );
+        return strtr( rawurlencode( $content ), $revert );
+	}
+	
+	/**
+	 * Generate a random bool value
+	 *
+	 * @return bool
+	 */
+	public function get_random_bool(){
+		return ( rand(0,1) == 1 ) ? true : false;
+	}
 	
 }

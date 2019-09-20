@@ -111,20 +111,26 @@ class WP_Mailto_Links_Validate{
                 break;
             case 'without_javascript':
                 $filtered = $this->filter_input_fields( $filtered, $protect_using );
+                $filtered = $this->filter_mailto_links( $filtered, 'without_javascript' );
 
                 if( $convert_plain_to_image ){
                     $replace_by = 'convert_image';
                 } else {
-                    $replace_by = 'char_encode';
+                    $replace_by = 'use_css';
                 }
 
-                $filtered = $this->filter_mailto_links( $filtered, 'without_javascript' );
-
-                if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
-                    $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
-                        return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'without_javascript' );
-                    }, $replace_by);
+                if( $convert_plain_to_mailto ){
+                    if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
+                        $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
+                            return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'without_javascript' );
+                        }, $replace_by);
+                    } else {
+                        $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
+                    }
+                } else {
+                    $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
                 }
+                
                 break;
             case 'with_javascript':
                 $filtered = $this->filter_input_fields( $filtered, $protect_using );
@@ -133,14 +139,14 @@ class WP_Mailto_Links_Validate{
                 if( $convert_plain_to_image ){
                     $replace_by = 'convert_image';
                 } else {
-                    $replace_by = 'char_encode';
+                    $replace_by = 'use_javascript';
                 }
 
                 if( $convert_plain_to_mailto ){
                     if( ! ( function_exists( 'et_fb_enabled' ) && et_fb_enabled() ) ){
                         $filtered = $this->filter_plain_emails( $filtered, function ( $match ) use ( $self ) {
-                            return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ) );
-                        });
+                            return $self->create_protected_mailto( $match[0], array( 'href' => 'mailto:' . $match[0] ), 'with_javascript' );
+                        }, $replace_by);
                     } else {
                         $filtered = $this->filter_plain_emails( $filtered, null, $replace_by );
                     }
@@ -198,6 +204,12 @@ class WP_Mailto_Links_Validate{
                     $protected_return = antispambot( $matches[0] );
                 }
                 
+            } elseif( $protection_method === 'use_javascript' ){
+                $protection_text = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
+                $protected_return = $this->dynamic_js_email_encoding( $matches[0], $protection_text );
+            } elseif( $protection_method === 'use_css' ){
+                $protection_text = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
+                $protected_return = $this->encode_email_css( $matches[0], $protection_text );
             } else {
                 $protected_return = $replace_by;
             }
@@ -328,6 +340,89 @@ class WP_Mailto_Links_Validate{
 	 * ######################
 	 */
 
+      /**
+     * ASCII method
+     *
+     * @param string $value
+     * @param string $protection_text
+     * @return string
+     */
+    public function encode_ascii($value, $protection_text) {
+        $mail_link = $value;
+
+        // first encode, so special chars can be supported
+        $mail_link = WPMT()->helpers->encode_uri_components( $mail_link );
+        
+        $mail_letters = '';
+
+        for ($i = 0; $i < strlen($mail_link); $i ++) {
+            $l = substr($mail_link, $i, 1);
+
+            if (strpos($mail_letters, $l) === false) {
+                $p = rand(0, strlen($mail_letters));
+                $mail_letters = substr($mail_letters, 0, $p) .
+                $l . substr($mail_letters, $p, strlen($mail_letters));
+            }
+        }
+
+        $mail_letters_enc = str_replace("\\", "\\\\", $mail_letters);
+        $mail_letters_enc = str_replace("\"", "\\\"", $mail_letters_enc);
+
+        $mail_indices = '';
+        for ($i = 0; $i < strlen($mail_link); $i ++) {
+            $index = strpos($mail_letters, substr($mail_link, $i, 1));
+            $index += 48;
+            $mail_indices .= chr($index);
+        }
+
+        $mail_indices = str_replace("\\", "\\\\", $mail_indices);
+        $mail_indices = str_replace("\"", "\\\"", $mail_indices);
+
+        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand(0, 1000000);
+
+        return '<span id="'. $element_id . '"></span>'
+                . '<script type="text/javascript">'
+                . '(function(){'
+                . 'var ml="'. $mail_letters_enc .'",mi="'. $mail_indices .'",o="";'
+                . 'for(var j=0,l=mi.length;j<l;j++){'
+                . 'o+=ml.charAt(mi.charCodeAt(j)-48);'
+                . '}document.getElementById("' . $element_id . '").innerHTML = decodeURIComponent(o);' // decode at the end, this way special chars can be supported
+                . '}());'
+                . '</script><noscript>'
+                . $protection_text
+                . '</noscript>';
+    }
+
+    /**
+     * Escape encoding method
+     *
+     * @param string $value
+     * @param string $protection_text
+     * @return string
+     */
+    public function encode_escape( $value, $protection_text ) {
+        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand( 0, 1000000 );
+        $string = '\'' . $value . '\'';
+
+        // break string into array of characters, we can't use string_split because its php5 only
+        $split = preg_split( '||', $string );
+        $out = '<span id="'. $element_id . '"></span>'
+             . '<script type="text/javascript">' . 'document.getElementById("' . $element_id . '").innerHTML = ev' . 'al(decodeURIComponent("';
+
+              foreach( $split as $c ) {
+                // preg split will return empty first and last characters, check for them and ignore
+                if( ! empty( $c ) ) {
+                  $out .= '%' . dechex( ord( $c ) );
+                }
+              }
+
+              $out .= '"))' . '</script><noscript>'
+                   . $protection_text
+                   . '</noscript>';
+
+        return $out;
+    }
+
     /**
      * Encode email in input field
      * @param string $input
@@ -387,7 +482,7 @@ class WP_Mailto_Links_Validate{
     }
 
     /**
-     * Create a protected mailto link
+     * Create a protected email
      * 
      * @param string $display
      * @param array $attrs Optional
@@ -399,7 +494,6 @@ class WP_Mailto_Links_Validate{
         $custom_class = (string) WPMT()->settings->get_setting( 'class_name', true );
         $activated_protection = ( in_array( (int) WPMT()->settings->get_setting( 'protect', true ), array( 1, 2 ) ) ) ? true : false;
         $security_check = (string) WPMT()->settings->get_setting( 'security_check', true );
-        $convert_plain_to_image = (bool) WPMT()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
 
         // set user-defined class
         if ( $custom_class && strpos( $class_ori, $custom_class ) === FALSE ) {
@@ -419,7 +513,7 @@ class WP_Mailto_Links_Validate{
 
         foreach ( $attrs AS $key => $value ) {
             if ( strtolower( $key ) == 'href' && $activated_protection ) {
-                if( $convert_plain_to_image || $protection_method === 'without_javascript' ){
+                if( $protection_method === 'without_javascript' ){
                     $link .= $key . '="' . antispambot( $value ) . '" ';
                 } else {
                     // get email from href
@@ -442,7 +536,7 @@ class WP_Mailto_Links_Validate{
 
         $link .= '>';
 
-        $link .= ( $activated_protection && preg_match( WPMT()->settings->get_email_regex(), $display) > 0 ) ? $this->get_protected_display( $display ) : $display;
+        $link .= ( $activated_protection && preg_match( WPMT()->settings->get_email_regex(), $display) > 0 ) ? $this->get_protected_display( $display, $protection_method ) : $display;
 
         $link .= '</a>';
 
@@ -450,7 +544,7 @@ class WP_Mailto_Links_Validate{
         $link = apply_filters( 'wpml_mailto', $link, $display, $email, $attrs );
 
         // just in case there are still email addresses f.e. within title-tag
-        $link = $this->filter_plain_emails( $link );
+        $link = $this->filter_plain_emails( $link, null, 'char_encode' );
 
         // mark link as successfullly encoded (for admin users)
         if ( current_user_can( WPMT()->settings->get_admin_cap( 'frontend-display-security-check' ) ) && $security_check ) {
@@ -473,7 +567,7 @@ class WP_Mailto_Links_Validate{
     public function get_protected_display( $display, $protection_method = null ){
 
         $convert_plain_to_image = (bool) WPMT()->settings->get_setting( 'convert_plain_to_image', true, 'filter_body' );
-        $deactivate_rtl = (bool) WPMT()->settings->get_setting( 'deactivate_rtl', true, 'filter_body' );
+        $protection_text = WPMT()->helpers->translate( WPMT()->settings->get_setting( 'protection_text', true ), 'email-protection-text' );
 
         // get display out of array (result of preg callback)
         if ( is_array( $display ) ) {
@@ -484,11 +578,42 @@ class WP_Mailto_Links_Validate{
             return '<img src="' . $this->generate_email_image_url( $display ) . '" />';
         }
 
-        if( $protection_method === 'without_javascript' ){
-            return '<img src="' . $this->generate_email_image_url( $display ) . '" />';
+        if( $protection_method !== 'without_javascript' ){
+            return $this->dynamic_js_email_encoding( $display, $protection_text );
         }
 
+        return $this->encode_email_css( $display );
         
+    }
+
+    /**
+     * Dynamic email encoding with certain javascript methods
+     *
+     * @param string $email
+     * @param string $protection_text
+     * @return the encoded email
+     */
+    public function dynamic_js_email_encoding( $email, $protection_text = null ){
+        $return = $email;
+        $rand = rand(0,2);
+        switch( $rand ){
+            case 2:
+                $return = $this->encode_escape( $return, $protection_text );
+                break;
+            case 1:
+                $return = $this->encode_ascii( $return, $protection_text );
+                break;
+            default:
+                $return = $this->encode_ascii( $return, $protection_text );
+                break;
+        }
+
+        return $return;
+    }
+
+    public function encode_email_css( $display ){
+        $deactivate_rtl = (bool) WPMT()->settings->get_setting( 'deactivate_rtl', true, 'filter_body' );
+
         $stripped_display = strip_tags( $display );
         $stripped_display = html_entity_decode( $stripped_display );
 

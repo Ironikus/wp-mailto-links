@@ -1,26 +1,27 @@
-=== WP Mailto Links - Manage & Protect Emails ===
+=== WP Mailto Links - Protect Email Addresses ===
 Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.4
+Stable tag: 3.0.5
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Protect & encode email addresses and mailto links from spambots & spamming. Easy to use - encodes emails out-of-the-box.
+Protect & encode email addresses safely from spambots & spamming. Easy to use - encodes emails out-of-the-box.
 
 == Description ==
-Protect and encode email addresses and mailto links from spambots, spamming and other robots. Easy to use out-of-the-box without any configuration.
+Protect and encode email addresses safely from spambots, spamming and other robots. Easy to use out-of-the-box without any configuration.
 
 = Features =
 * Full page protection for emails
 * Instant results (No confiruation needed)
 * Protects mailto links, plain emails, email input fields, RSS feeds and much more
-* Autmoatic protection technique detection (Our plugin chooses automatically the best protection technique)
-* Exclude posts and pages from the protection
+* Autmoatic protection technique detection (Our plugin chooses automatically the best protection technique for each email)
+* Exclude posts and pages from protection
 * Automatically convert plain emails to mailto-links
 * Automatically convert plain emails to png images
+* Supports rot13 encoing, escape encoding, CSS directions, entity encoding and much more
 * Deactivate CSS directions manually for backwards compatibility
 * Shortcode support: `[wpml_mailto]`
 * Template tag support: `wpml_mailto()` and `wpml_filter()`
@@ -28,7 +29,7 @@ Protect and encode email addresses and mailto links from spambots, spamming and 
 The plugin combines the best email protection methods (CSS, PHP and JavaScript techniques).
 
 = Easy to use =
-The plugin works out-of-the-box to protect your email addresses. After activating the plugin all options are already set for protecting your emails and mailto links. Optionally you can also set some style options, like adding an icon.
+The plugin works out-of-the-box to protect your email addresses. After activating the plugin, all options are already set for protecting your emails and mailto links.
 
 
 == Installation ==
@@ -80,6 +81,13 @@ Create a protected mailto link in your posts:
 It's also possible to add attributes to the mailto link, like a target:
 `[wpml_mailto email="info@myemail.com" target="_blank"]My Email[/wpml_mailto]`
 
+= Shortcode `[wpmt_protect]...[/wpmt_protect]` =
+Protect content using our plugin that is not encodedby default (E.g. some ajax loaded values):
+`[wpmt_protect]YOUR CONTENT YOU WANT TO CHECK FOR EMAILS[/wpmt_protect]`
+
+It's also possible to customize the encoding type using "protect_using". Possible values: char_encode, strong_method, without_javascript, with_javascript:
+`[wpmt_protect protect_using="..."]YOUR CONTENT YOU WANT TO CHECK FOR EMAILS[/wpmt_protect]`
+
 = Template tag `wpml_mailto( $email [, $display] [, $attrs] )` =
 Create a protected mailto link in your template like:
 `<?php
@@ -97,6 +105,20 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+
+= 3.0.5 =
+* Feature: Introduce automatic rot13 encoding using javascript
+* Feature: Introduce automatic escape encoding using javascript
+* Feature: Add shortcode to protect additional content that may can't be reached by the plugin (e.g. certain ajax calls)
+* Feature: Randomization for Javascript methods to offer a better and less predictible protection
+* Feature: Randomization of CSS and entity encoding methods for Mailto-Links
+* Tweak: Allow javscript mailto encoding as well if email png protection is activated and javascript is allowed
+* Tweak: Optimize plain email filtering after protecting mailto links and email addresses
+* Tweak: Optimize settings-flow in certain combinations
+* Tweak: Optimize settings description
+* Tweak: Avoid unnecesary email line breaks from wrongly applied display properties 
+* Tweak: Extend shortcoe help tabs
+* Dev: Added new random bool function
 
 = 3.0.4 =
 * Feature: Soft-encode for script tags to preserve the javascript logic
