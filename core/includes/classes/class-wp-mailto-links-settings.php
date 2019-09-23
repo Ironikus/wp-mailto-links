@@ -58,6 +58,7 @@ class WP_Mailto_Links_Settings{
 			'first_version_init' => 100,
 			'version_update' => 100,
 			'display_email_image' => 10,
+			'callback_rss_remove_shortcodes' => 10,
 		);
 
 		//Regex
@@ -150,6 +151,11 @@ class WP_Mailto_Links_Settings{
 						'advanced' 	  => true,
 						'label' => WPMT()->helpers->translate( 'RSS feed', 'wpmt-settings-filter_rss-label' ),
 						'description' => WPMT()->helpers->translate( 'Activating this option results in protecting the rss feed based on the given protection method.', 'wpmt-settings-filter_rss-tip' )
+					),
+					'remove_shortcodes_rss' => array(
+						'advanced' 	  => true,
+						'label' => WPMT()->helpers->translate( 'Remove all shortcodes from the RSS feeds', 'wpmt-settings-remove_shortcodes_rss-label' ),
+						'description' => WPMT()->helpers->translate( 'Activating this option results in protecting the rss feed based on the given protection method.', 'wpmt-settings-remove_shortcodes_rss-tip' )
 					),
 					'input_strong_protection' => array(
 						'advanced' 	  => true,
@@ -255,6 +261,17 @@ class WP_Mailto_Links_Settings{
 				'placeholder' => '',
 				'required'    => false,
 				'description' => WPMT()->helpers->translate('Leave blank for none', 'wpmt-settings-class_name-tip')
+			),
+
+			'disable_marketing' => array(
+				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
+				'id'          => 'disable_marketing',
+				'type'        => 'checkbox',
+				'title'       => WPMT()->helpers->translate('Disable Marketing', 'wpmt-settings-disable_marketing'),
+				'label'       => WPMT()->helpers->translate('Disable all marketing notifications', 'wpmt-settings-disable_marketing-label'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPMT()->helpers->translate('If you are not satisfied with our marketing recommendations, check this box.', 'wpmt-settings-disable_marketing-tip')
 			),
 
 			'security_check' => array(

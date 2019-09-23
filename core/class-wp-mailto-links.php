@@ -84,6 +84,8 @@ if ( ! class_exists( 'WP_Mailto_Links' ) ) :
 				self::$instance->settings       = new WP_Mailto_Links_Settings();
 				self::$instance->validate       = new WP_Mailto_Links_Validate();
 
+				new WPMT_Integrations_Loader();
+
 				new WP_Mailto_Links_Run();
 
 				/**

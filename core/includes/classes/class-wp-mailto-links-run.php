@@ -221,12 +221,21 @@ class WP_Mailto_Links_Run{
 
 		$protection_method = (int) WPMT()->settings->get_setting( 'protect', true );
 		$filter_rss = (int) WPMT()->settings->get_setting( 'filter_rss', true, 'filter_body' );
+		$remove_shortcodes_rss = (int) WPMT()->settings->get_setting( 'remove_shortcodes_rss', true, 'filter_body' );
 		$protect_shortcode_tags = (bool) WPMT()->settings->get_setting( 'protect_shortcode_tags', true, 'filter_body' );
 		$protect_shortcode_tags_valid = false;
 
-		if ( $filter_rss === 1 && is_feed() ) {
-			add_filter( $this->final_outout_buffer_hook, array( $this, 'filter_rss' ), WPMT()->settings->get_hook_priorities( 'filter_rss' ) );
-        }
+		if ( is_feed() ) {
+			
+			if( $filter_rss === 1 ){
+				add_filter( $this->final_outout_buffer_hook, array( $this, 'filter_rss' ), WPMT()->settings->get_hook_priorities( 'filter_rss' ) );
+			}
+
+			if ( $remove_shortcodes_rss ) {
+				add_filter( $this->final_outout_buffer_hook, array( $this, 'callback_rss_remove_shortcodes' ), WPMT()->settings->get_hook_priorities( 'callback_rss_remove_shortcodes' ) );
+			}
+		
+		}
 
 		if ( $protection_method === 2 ) {
 			$protect_shortcode_tags_valid = true;
@@ -303,6 +312,18 @@ class WP_Mailto_Links_Run{
 		$protection_type = (string) WPMT()->settings->get_setting( 'protect_using', true );
         return WPMT()->validate->filter_rss( $content, $protection_type );
 	}
+
+	/**
+     * RSS Callback Remove shortcodes
+     * @param string $content
+     * @return string
+     */
+    public function callback_rss_remove_shortcodes( $content ) {
+        
+        $content = strip_shortcodes($content);
+
+        return $content;
+    }
 	
 	/**
 	 * ######################

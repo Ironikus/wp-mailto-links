@@ -8,19 +8,39 @@
  // Exit if accessed directly.
 if ( !defined( 'ABSPATH' ) ) exit;
 
-$plugins = array(
-	'mailoptin' => 'mailoptin.php',
-);
+class WPMT_Integrations_Loader{
 
-foreach ( $plugins as $plugin_id => $plugin_file ) :
-
-    $plugin_file = 'classes/' . $plugin_file;
-    $full_path = WPMT_PLUGIN_DIR . 'core/includes/integrations/' . $plugin_file;
-
-	if ( TRUE === apply_filters( 'wpmt/integrations/' . $plugin_id, TRUE ) ){
-        if( file_exists( $full_path ) ){
-            include( $plugin_file );
-        }
+    function __construct(){
+        $this->load_integrations();
     }
 
-endforeach;
+    public function load_integrations(){
+
+        $plugins = array(
+            'mailoptin' => 'mailoptin.php',
+        );
+        $disable_marketing = (bool) WPMT()->settings->get_setting( 'disable_marketing', true );
+
+        $filter_integrations = true;
+        if( $disable_marketing ){
+            $filter_integrations = false;
+        }
+        
+        foreach ( $plugins as $plugin_id => $plugin_file ) :
+        
+            $plugin_file = 'classes/' . $plugin_file;
+            $full_path = WPMT_PLUGIN_DIR . 'core/includes/integrations/' . $plugin_file;
+        
+            if ( TRUE === apply_filters( 'wpmt/integrations/' . $plugin_id, $filter_integrations ) ){
+                if( file_exists( $full_path ) ){
+                    include( $plugin_file );
+                }
+            }
+        
+        endforeach;
+
+    }
+
+}
+
+

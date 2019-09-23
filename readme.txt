@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.5
+Stable tag: 3.0.6
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -106,12 +106,15 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 
 == Changelog ==
 
+= 3.0.6 =
+* Feature: Add setting to remove shortcodes from RSS feeds
+* Tweak: Add feature to disable marketing notifications (Thanks @ac1643 for mentioning - this was probably a bug)
+
 = 3.0.5 =
 * Feature: Introduce automatic rot13 encoding using javascript
 * Feature: Introduce automatic escape encoding using javascript
 * Feature: Add shortcode to protect additional content that may can't be reached by the plugin (e.g. certain ajax calls)
 * Feature: Randomization for Javascript methods to offer a better and less predictible protection
-* Feature: Randomization of CSS and entity encoding methods for Mailto-Links
 * Tweak: Allow javscript mailto encoding as well if email png protection is activated and javascript is allowed
 * Tweak: Optimize plain email filtering after protecting mailto links and email addresses
 * Tweak: Optimize settings-flow in certain combinations
