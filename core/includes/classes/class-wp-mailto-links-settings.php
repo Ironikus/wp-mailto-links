@@ -267,6 +267,7 @@ class WP_Mailto_Links_Settings{
 				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
 				'id'          => 'disable_marketing',
 				'type'        => 'checkbox',
+				'advanced' 	  => true,
 				'title'       => WPMT()->helpers->translate('Disable Marketing', 'wpmt-settings-disable_marketing'),
 				'label'       => WPMT()->helpers->translate('Disable all marketing notifications', 'wpmt-settings-disable_marketing-label'),
 				'placeholder' => '',

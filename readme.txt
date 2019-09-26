@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.6
+Stable tag: 3.0.7
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -27,6 +27,9 @@ Protect and encode email addresses safely from spambots, spamming and other robo
 * Template tag support: `wpml_mailto()` and `wpml_filter()`
 
 The plugin combines the best email protection methods (CSS, PHP and JavaScript techniques).
+
+= Free Website Check  =
+We offer you a free tool to test if your website contains unprotected emails. You can use our website checker by [clicking here](https://ironikus.com/email-checker/)
 
 = Easy to use =
 The plugin works out-of-the-box to protect your email addresses. After activating the plugin, all options are already set for protecting your emails and mailto links.
@@ -105,6 +108,11 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+
+= 3.0.7 =
+* Feature: Website checker to search your site for unprotected emails. Follow this URL for more information: https://ironikus.com/email-checker/
+* Tweak: Merge new marketing setting into advanced area
+* Tweak: Optimize some code parts for the newest WordPress standard
 
 = 3.0.6 =
 * Feature: Add setting to remove shortcodes from RSS feeds

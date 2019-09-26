@@ -10,6 +10,9 @@
     <?php echo WPMT()->helpers->translate( 'To report problems or bugs or for support, please use <a href="https://wordpress.org/support/plugin/wp-mailto-links#postform" target="_new">the official forum</a>.', 'help_tab-general' ); ?>
 </p>
 <p>
+    <?php echo WPMT()->helpers->translate( 'You can now also check your website protection using our email checker tool: <a href="https://ironikus.com/email-checker/" target="_blank">https://ironikus.com/email-checker/</a>.', 'help_tab-general' ); ?>
+</p>
+<p>
     Visit us at <a href="https://ironikus.com" target="_blank" title="Visit us at https://ironikus.com" >https://ironikus.com</a>
     <i class="dashicons-before dashicons-universal-access"></i>
 </p>
