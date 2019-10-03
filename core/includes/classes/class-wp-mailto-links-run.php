@@ -77,7 +77,9 @@ class WP_Mailto_Links_Run{
 	  * @return void
 	  */
 	public function buffer_final_output(){
-        ob_start( array( $this, 'apply_content_filter' ) );
+        if ( ! defined( 'WP_CLI' ) ) {
+			ob_start( array( $this, 'apply_content_filter' ) );
+		}
     }
 
 	 /**
@@ -165,11 +167,12 @@ class WP_Mailto_Links_Run{
 		$css_version = date( "ymd-Gis", filemtime( WPMT_PLUGIN_DIR . 'core/includes/assets/css/style.css' ));
 		$protection_activated = (int) WPMT()->settings->get_setting( 'protect', true );
 		$without_javascript = (string) WPMT()->settings->get_setting( 'protect_using', true );
+		$footer_scripts = (bool) WPMT()->settings->get_setting( 'footer_scripts', true );
 		 
 		if( $protection_activated === 2 || $protection_activated === 1 ){
 
 			if( $without_javascript !== 'without_javascript' ){
-				wp_enqueue_script( 'wpmt-js-frontend', WPMT_PLUGIN_URL . 'core/includes/assets/js/custom.js', array( 'jquery' ), $js_version );
+				wp_enqueue_script( 'wpmt-js-frontend', WPMT_PLUGIN_URL . 'core/includes/assets/js/custom.js', array( 'jquery' ), $js_version, $footer_scripts );
 			}
 			
 			wp_register_style( 'wpmt-css-frontend',    WPMT_PLUGIN_URL . 'core/includes/assets/css/style.css', false,   $css_version );

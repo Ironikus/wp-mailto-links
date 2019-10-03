@@ -16,22 +16,28 @@ class WPMT_Integrations_Loader{
 
     public function load_integrations(){
 
-        $plugins = array(
-            'mailoptin' => 'mailoptin.php',
-        );
         $disable_marketing = (bool) WPMT()->settings->get_setting( 'disable_marketing', true );
 
-        $filter_integrations = true;
-        if( $disable_marketing ){
-            $filter_integrations = false;
-        }
+        $marketing = array(
+            'mailoptin' => 'mailoptin.php',
+        );
+
+        $plugins = array(
+            'divi_theme' => 'divi_theme.php',
+        );
         
-        foreach ( $plugins as $plugin_id => $plugin_file ) :
+        if( $disable_marketing ){
+            $marketing = array();
+        }
+
+        $integrations = array_merge( $marketing, $plugins );
+        
+        foreach ( $integrations as $plugin_id => $plugin_file ) :
         
             $plugin_file = 'classes/' . $plugin_file;
             $full_path = WPMT_PLUGIN_DIR . 'core/includes/integrations/' . $plugin_file;
         
-            if ( TRUE === apply_filters( 'wpmt/integrations/' . $plugin_id, $filter_integrations ) ){
+            if ( true === apply_filters( 'wpmt/integrations/' . $plugin_id, true ) ){
                 if( file_exists( $full_path ) ){
                     include( $plugin_file );
                 }
@@ -42,5 +48,3 @@ class WPMT_Integrations_Loader{
     }
 
 }
-
-

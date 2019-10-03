@@ -3,7 +3,7 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.7
+Stable tag: 3.0.8
 Requires PHP: 5.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -108,6 +108,13 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+
+= 3.0.8 =
+* Feature: Introduce settings item to load all scripts within the footer instead of the head section
+* Tweak: Integration for Divi Theme included
+* Tweak: Adjust element id prefix
+* Tweak: Integration for Jetpack Carousel slider meta attributes
+* Fix: WP CLI stopped working due to loaded buffer
 
 = 3.0.7 =
 * Feature: Website checker to search your site for unprotected emails. Follow this URL for more information: https://ironikus.com/email-checker/

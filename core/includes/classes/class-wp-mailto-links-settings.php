@@ -65,6 +65,7 @@ class WP_Mailto_Links_Settings{
 		$this->email_regex 			= '([_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,}))';
 		$this->soft_attribute_regex = array(
 			'woocommerce_variation_attribute_tag' => '/data-product_variations="([^"]*)"/i',
+			'jetpack_carousel_image_attribute_tag' => '/data-image-meta="([^"]*)"/i',
 		);
 
 		//Load data
@@ -261,6 +262,18 @@ class WP_Mailto_Links_Settings{
 				'placeholder' => '',
 				'required'    => false,
 				'description' => WPMT()->helpers->translate('Leave blank for none', 'wpmt-settings-class_name-tip')
+			),
+
+			'footer_scripts' => array(
+				'fieldset'    => array( 'slug' => 'main', 'label' => 'Label' ),
+				'id'          => 'footer_scripts',
+				'type'        => 'checkbox',
+				'advanced' 	  => true,
+				'title'       => WPMT()->helpers->translate('Load scripts in footer', 'wpmt-settings-footer_scripts'),
+				'label'       => WPMT()->helpers->translate('Check this button if you want to load all frontend scripts within the footer.', 'wpmt-settings-footer_scripts-label'),
+				'placeholder' => '',
+				'required'    => false,
+				'description' => WPMT()->helpers->translate('This forces every script to be enqueued within the footer.', 'wpmt-settings-footer_scripts-tip')
 			),
 
 			'disable_marketing' => array(

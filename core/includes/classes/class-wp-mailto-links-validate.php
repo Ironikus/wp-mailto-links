@@ -378,7 +378,7 @@ class WP_Mailto_Links_Validate{
         $mail_indices = str_replace("\\", "\\\\", $mail_indices);
         $mail_indices = str_replace("\"", "\\\"", $mail_indices);
 
-        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand(0, 1000000);
+        $element_id = 'wpmt-' . mt_rand( 0, 1000000 ) . '-' . mt_rand(0, 1000000);
 
         return '<span id="'. $element_id . '"></span>'
                 . '<script type="text/javascript">'
@@ -401,7 +401,7 @@ class WP_Mailto_Links_Validate{
      * @return string
      */
     public function encode_escape( $value, $protection_text ) {
-        $element_id = 'eeb-' . mt_rand( 0, 1000000 ) . '-' . mt_rand( 0, 1000000 );
+        $element_id = 'wpmt-' . mt_rand( 0, 1000000 ) . '-' . mt_rand( 0, 1000000 );
         $string = '\'' . $value . '\'';
 
         // break string into array of characters, we can't use string_split because its php5 only
