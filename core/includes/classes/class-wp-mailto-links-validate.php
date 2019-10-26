@@ -411,7 +411,7 @@ class WP_Mailto_Links_Validate{
 
               foreach( $split as $c ) {
                 // preg split will return empty first and last characters, check for them and ignore
-                if( ! empty( $c ) ) {
+                if( ! empty( $c ) || $c === '0' ) {
                   $out .= '%' . dechex( ord( $c ) );
                 }
               }
