@@ -67,6 +67,7 @@ class WP_Mailto_Links_Settings{
 			'woocommerce_variation_attribute_tag' 				=> '/data-product_variations="([^"]*)"/i',
 			'jetpack_carousel_image_attribute_tag' 				=> '/data-image-meta="([^"]*)"/i',
 			'jetpack_carousel_image_attribute_description_tag' 	=> '/data-image-description="([^"]*)"/i',
+			'html_placeholder_tag' 								=> '/placeholder="([^"]*)"/i',
 		);
 
 		//Load data
