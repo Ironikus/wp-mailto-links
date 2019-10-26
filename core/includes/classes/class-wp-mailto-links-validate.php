@@ -298,7 +298,7 @@ class WP_Mailto_Links_Validate{
         foreach( $soft_attributes as $ident => $regex ){
 
             $array = array();
-            preg_match( $regex, $content, $array ) ;
+            preg_match_all( $regex, $content, $array ) ;
 
             foreach( $array as $single ){
                 $content = str_replace( $single, $this->filter_plain_emails( $single, null, $protection_method, false ), $content );
