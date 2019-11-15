@@ -3,8 +3,8 @@ Contributors: ironikus
 Tags: hide, email, email address, mailto, antispam, protect, spambot, encode, encrypt, obfuscate, email link, protection
 Requires at least: 4.7
 Tested up to: 5.2.3
-Stable tag: 3.0.9
-Requires PHP: 5.2
+Stable tag: 3.1.0
+Requires PHP: 5.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,6 +108,9 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 ?>`
 
 == Changelog ==
+= 3.1.0 =
+* Feature: Exclude script tags from being encoded
+* Fix: Revalidate and strip escape sequences for encode_escape function
 
 = 3.0.9 =
 * Feature: Optimize Jetpack integration to also filter against image attribute description tags
@@ -116,7 +119,6 @@ Filter given content to protect mailto links, shortcodes and plain emails (accor
 * Fix: Only one match of the soft attributes was soft encoded properly
 * Fix: Fix fatal error with template tags
 * Fix: The escape js function stripped away all zeros from emails
-
 
 = 3.0.8 =
 * Feature: Introduce settings item to load all scripts within the footer instead of the head section
